@@ -1,6 +1,7 @@
+# Yemi
 def preprocess():
   # 1) we pos tag using nltk's Unigram tagger (customizable) 
-
+  
   # 1-1) resolve ambiguity in ingredient description 
 
   # 2) create Recipe objects (name,summary, list of ingredients)
