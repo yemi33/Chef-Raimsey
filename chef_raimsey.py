@@ -23,7 +23,7 @@ class Chef_Raimsey:
   #Nicole
   def __init__(self,test=False):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
-    self.user_name, self.favorite_ingredient, self.list_of_allergies = self.conversation_starter()
+    self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -295,11 +295,13 @@ class Chef_Raimsey:
     name_list = []
 
     if len(self.list_of_allergies) > 0:
-      string = "Non-" + random.choice(self.list_of_allergies)
+      random_choice = random.choice(self.list_of_allergies)
+      if random_choice.lower().strip() == "all of the above":
+        random_choice = self.main_allergen
+      string = "Non-" + random_choice.capitalize()
       name_list.append(string)
 
     name_list.append(self.favorite_ingredient.capitalize())
-
     if recipe.recipe_type == "Frozen desserts":
       if name_list[0][:3] == "Non-":
         name_list.insert(1, "Frozen")
@@ -336,7 +338,8 @@ class Chef_Raimsey:
     inferKit = InferKit(api_key='48016474-4a28-48d4-a3e2-b104d4f07451')
     ingr1 = recipe.ingredients[0][3].replace("_", " ")
     ingr2 = recipe.ingredients[1][3].replace("_", " ")
-    text = "This tasty recipe uses %s and %s," % (ingr1, ingr2)
+    category = recipe.recipe_type[:-1].lower()
+    text = "This tasty %s uses %s and %s," % (category, ingr1, ingr2)
     summary = inferKit.generate(text, length=80)
     #replace ingredients not in recipe with ones that are
     tag_dict = preprocessing.create_tag_dict()
@@ -367,7 +370,8 @@ class Chef_Raimsey:
     First few words of the greatest dessert Chef ever.
     '''
     ingredients_allergens = []
-    name = input("Hi. This is Chef Raimsey! And what is your name? ")
+    main_allergen = ""
+    name = input("Hi. This is Chef Raimsey! And what is your name? ").capitalize()
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ").lower()
     print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
@@ -391,6 +395,7 @@ class Chef_Raimsey:
           choice = int(choice)
           allergy = mapping[choice]
           print("Ok noted! So you are allergic to", allergy,".")
+          main_allergen = allergy
           allergies_list = allergens_dict[list_of_allergens[choice]]
           allergies_list = [s.strip().lower() for s in allergies_list]
           for i in range(len(allergies_list)):
@@ -412,7 +417,7 @@ class Chef_Raimsey:
             print("Alright, cool. We can move on then!")
     else:
         print("Alright, cool. We can move on then!")
-    return name, favorite_ingredient, ingredients_allergens
+    return name, favorite_ingredient, ingredients_allergens, main_allergen
         
 #Maanya
 def main():
