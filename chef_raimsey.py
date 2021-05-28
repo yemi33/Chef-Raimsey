@@ -126,7 +126,7 @@ class Chef_Raimsey:
     return number_of_ingredients
 
   #Nicole - recipe ingredient list generation complete
-  def generate(self, user_favorite_food):
+  def generate(self):
     '''
     Uses user's favorite ingredient or food to initiate the recipe generation process.
 
@@ -135,6 +135,7 @@ class Chef_Raimsey:
     Returns:
       A recipe object
     '''
+    user_favorite_food = self.favorite_ingredient
     # start generation process off of the user's favorite food
     new_recipe = preprocessing.Recipe(name="",summary="",ingredients=[],recipe_type="")
     
@@ -161,11 +162,10 @@ class Chef_Raimsey:
       last_ingredient = next_ingredient
     # print(new_recipe.ingredients)
 
-    # new_recipe.name = self.name_recipe(new_recipe)
-    # new_recipe.recipe_type = self.categorize(new_recipe)
+    new_recipe.name = self.name_recipe(new_recipe)
+    new_recipe.recipe_type = self.categorize(new_recipe)
     new_recipe.summary = self.create_summary(new_recipe)
-    print(new_recipe.summary)
-    # self.add_new_recipe(recipe)
+    print(new_recipe)
     
     return new_recipe
   
@@ -410,8 +410,8 @@ def main():
   Method to get the Chef working!
   '''
   chef = Chef_Raimsey(test=True)
-  # chef.conversation_starter()
-  recipe = chef.generate("blueberries")
+  recipe = chef.generate()
+  # recipe = chef.generate("blueberries")
 
   # Sue's test
   # recipe = preprocessing.Recipe(name="",summary="",ingredients=["1 (18.25 ounce) package yellow cake mix"],recipe_type="")
