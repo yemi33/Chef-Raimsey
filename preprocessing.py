@@ -137,7 +137,9 @@ def preprocess(test=False):
         recipe = Recipe(name=name, summary=summary, ingredients=new_ingredients, recipe_type=dessert_type)
         list_of_recipes.append(recipe)
 
-  return list_of_recipes, dictionary_of_frequently_seen_together_ingredients, dictionary_of_frequently_used_amount, dictionary_of_frequently_used_unit, dictionary_of_frequently_prepared_method
+  model = train_doc2vec(list_of_recipes)
+
+  return list_of_recipes, dictionary_of_frequently_seen_together_ingredients, dictionary_of_frequently_used_amount, dictionary_of_frequently_used_unit, dictionary_of_frequently_prepared_method, model
     
 
 # Yemi
@@ -310,10 +312,11 @@ def train_doc2vec(list_of_Recipes):
         document_entry = (document_topic, document_vector)
         model_export_data.append(document_entry)
         # Convert to numpy array and save to file
-    export_data = np.array(model_export_data)
+    export_data = np.array(model_export_data, dtype=object)
     outfile = open("doc2vec_model.txt", "wb")
     np.save(outfile, export_data)
     outfile.close()
+    return model
 
 if __name__ == "__main__":  
   preprocess(test=True)

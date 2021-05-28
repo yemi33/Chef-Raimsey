@@ -5,6 +5,9 @@ import numpy as np
 from scipy import spatial
 # from graphics import *
 from InferKit.InferMain import InferKit
+from nltk.tag import UnigramTagger
+import nltk
+nltk.download('punkt')
 
 '''
 pip install numpy
@@ -19,7 +22,7 @@ class Chef_Raimsey:
   '''
   #Nicole
   def __init__(self,test=False):
-    self.recipe_list, self.ingredients, self.amount, self.unit, self.prep = preprocessing.preprocess(test=test)
+    self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
     self.favorite_ingredient, self.list_of_allergies = self.conversation_starter()
 
   #Nicole
@@ -140,7 +143,7 @@ class Chef_Raimsey:
     fav_ingredient_unit = self.find_frequently_used_unit(user_favorite_food)
     fav_ingredient_prep = self.find_frequently_used_prep(user_favorite_food)
     new_recipe.ingredients.append([fav_ingredient_amount,fav_ingredient_unit,fav_ingredient_prep,user_favorite_food]) # this should be a len 4 list
-    
+    added_ingredients = [] #list to keep track of already added ingredients, so we can avoid repeats
     #start a for loop to add all the other ingredient
     last_ingredient = user_favorite_food
     for i in range(self.num_of_ingredients()):
@@ -148,11 +151,12 @@ class Chef_Raimsey:
       next_amount = self.find_frequently_used_amount(next_ingredient)
       next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
       next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
-      while next_ingredient in self.list_of_allergies: #don't want allergens to be included in the recipe object
+      while next_ingredient in self.list_of_allergies or next_ingredient in added_ingredients: #don't want allergens to be included in the recipe object
         next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
         next_amount = self.find_frequently_used_amount(next_ingredient)
         next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
         next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+      added_ingredients.append(next_ingredient)
       new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient])
       last_ingredient = next_ingredient
     # print(new_recipe.ingredients)
@@ -209,6 +213,17 @@ class Chef_Raimsey:
     
     generated_recipe = recipe.name + "\n\n" + recipe.summary + "\n\n" + final_recipe
     return generated_recipe
+  
+  # Sue
+  def create_ingredients_corpus(self, recipe):
+    '''
+    ingredients: list of lists (each sublist looks like: [CD] [UNIT] [PREP] [ING])
+    '''
+    recipe_corpus = []
+    for sublist in recipe.ingredients:
+        string = " ".join(sublist)
+        recipe_corpus.append(string)
+    return recipe_corpus
 
   #Sue
   def categorize(self, recipe):
@@ -220,18 +235,19 @@ class Chef_Raimsey:
     Returns:
       Category name
     '''
-    model_data = open("doc2vec_model.txt", "rb")
-    vector = model.infer_vector(recipe.processed_summary)
+    #model_data = open("doc2vec_model.txt", "rb")
+    model_data = np.load(open("doc2vec_model.txt", 'rb'), allow_pickle=True)
+    vector = self.model.infer_vector(self.create_ingredients_corpus(recipe))
     similarities = {} # dictionary of similarity and type
     for summary in model_data:
       similarity = 1 - spatial.distance.cosine(summary[1], vector)
       similarities[similarity] = summary[0]
     similarity_keys = similarities.keys()
-    sorted_keys = sorted(similarity_items, reverse = True)
+    sorted_keys = sorted(similarity_keys, reverse = True)
     type_similarity = {}
     type_similarity["Cakes"] = 0
     type_similarity["Cobblers"] = 0
-    type_similarity["Cokkies"] = 0
+    type_similarity["Cookies"] = 0
     type_similarity["Frozen desserts"] = 0
     type_similarity["Pies"] = 0
     '''
@@ -309,18 +325,21 @@ class Chef_Raimsey:
       summary of the recipe
     '''
     inferKit = InferKit(api_key='48016474-4a28-48d4-a3e2-b104d4f07451')
-    text = "This recipe includes %s and %s," % (recipe.ingredients[0], recipe.ingredients[1])
-    summary = inferKit.generate(text, length=40)
+    ingr1 = recipe.ingredients[0][3].replace("_", " ")
+    ingr2 = recipe.ingredients[1][3].replace("_", " ")
+    text = "This tasty recipe uses %s and %s," % (ingr1, ingr2)
+    summary = inferKit.generate(text, length=80)
     #replace ingredients not in recipe with ones that are
-    tag_dict = preproccessing.create_tag_dict()
+    tag_dict = preprocessing.create_tag_dict()
     tagger = UnigramTagger(model = tag_dict)
     summary_tokens = nltk.word_tokenize(summary)
+    tagged_tokens = tagger.tag(summary_tokens)
     needs_new_ingredient = []
     ingredients = []
     for line in recipe.ingredients:
       ingredients.append(line[3])
-    for token in summary_tokens:
-      if token[1] == "ingredient":
+    for token in tagged_tokens:
+      if token[1] == "ING":
         if token[0] not in ingredients:
           needs_new_ingredient.append(token[0])
     for ingr in needs_new_ingredient:
@@ -329,7 +348,7 @@ class Chef_Raimsey:
       except:
         pass
 
-    return summary
+    return text + " " + summary
 
   #Maanya (completed)
   #accounts for multiple allergies
@@ -392,7 +411,14 @@ def main():
   '''
   chef = Chef_Raimsey(test=True)
   # chef.conversation_starter()
-  chef.generate("blueberries")
+  recipe = chef.generate("blueberries")
+
+  # Sue's test
+  # recipe = preprocessing.Recipe(name="",summary="",ingredients=["1 (18.25 ounce) package yellow cake mix"],recipe_type="")
+  # name = chef.name_recipe(recipe)
+  # category = chef.categorize(recipe)
+  # print(name)
+  # print(category)
   
 if __name__ == "__main__":
   main()
