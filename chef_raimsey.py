@@ -3,7 +3,8 @@ import preprocessing
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import numpy as np
 from scipy import spatial
-#from InferKit.InferMain import InferKit
+# from graphics import *
+from InferKit.InferMain import InferKit
 
 '''
 pip install numpy
@@ -19,6 +20,7 @@ class Chef_Raimsey:
   #Nicole
   def __init__(self,test=False):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep = preprocessing.preprocess(test=test)
+    self.favorite_ingredient, self.list_of_allergies = self.conversation_starter()
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -146,15 +148,67 @@ class Chef_Raimsey:
       next_amount = self.find_frequently_used_amount(next_ingredient)
       next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
       next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
-      new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient]) # this should be a len 4 list
+      while next_ingredient in self.list_of_allergies: #don't want allergens to be included in the recipe object
+        next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
+        next_amount = self.find_frequently_used_amount(next_ingredient)
+        next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
+        next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+      new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient])
       last_ingredient = next_ingredient
-    print(new_recipe.ingredients)
-    new_recipe.name = self.name_recipe(new_recipe)
-    print(new_recipe.name)
+    # print(new_recipe.ingredients)
+
+    # new_recipe.name = self.name_recipe(new_recipe)
     # new_recipe.recipe_type = self.categorize(new_recipe)
-    # new_recipe.summary = self.create_summary(new_recipe)
+    new_recipe.summary = self.create_summary(new_recipe)
+    print(new_recipe.summary)
+    # self.add_new_recipe(recipe)
     
     return new_recipe
+  
+  def add_new_recipe(self,recipe):
+      save_file = open(f"newly_generated_recipe/{recipe.recipe_type}/{name}.txt", "a")
+      save_file.write(self.format_recipe(recipe))
+      save_file.close()
+
+#Maanya
+  def format_recipe(recipe):
+    '''
+    Output: 
+    
+    Strawberry Cobbler I
+
+    Serve with cream or ice cream. 
+
+    ½ cup white sugar 
+    1 tablespoon cornstarch 
+    1 cup water 
+    3 cups strawberries, hulled 
+    2 tablespoons butter, diced 
+    1 cup all-purpose flour 
+    1 tablespoon white sugar 
+    1 ½ teaspoons baking powder 
+    ½ teaspoon salt 
+    3 tablespoons butter 
+    ½ cup heavy whipping cream 
+    '''
+    for i in recipe.ingredients:
+        if "\u2009" in i[0]:
+            i[0] = i[0].replace("\u2009", " and ")
+        if i[0] == '1':
+            if[i[1][len(i[1])-1] == 's']:
+                i[1] = i[1][:len(i[1])-1]
+        if "_" in i[2] or "_" in i[3]:
+            if "_" in i[2]:
+                i[2] = i[2].replace("_", " ")
+            if "_" in i[3]:
+                i[3] = i[3].replace("_", " ")
+        if "(" in i[3]:
+            i[3].replace("(", "")
+            i[3].replace(")", "")
+    final_recipe = "\n".join(recipe.ingredients)
+    
+    generated_recipe = recipe.name + "\n\n" + recipe.summary + "\n\n" + final_recipe
+    return generated_recipe
 
   #Sue
   def categorize(self, recipe):
@@ -209,18 +263,27 @@ class Chef_Raimsey:
     Returns:
       name of the recipe
       creates file in its corresponding type folder under the newly_generated_recipe folder (e.g. "newly_generated_recipe/Cookies/recipe_name.txt")
+
+      self.favorite_ingredient, self.list_of_allergies
     '''
     name_list = []
-    # name_list[0] = ingredient and/or non-allergen
+
+    if len(self.list_of_allergies) > 0:
+      string = "Non-" + random.choice(self.list_of_allergies)
+      name_list.append(string)
+      
+    name_list.append(self.favorite_ingredient)
 
     if recipe.recipe_type == "Frozen desserts":
-      name_list.insert(0, "Frozen")
+      if name_list[0][:3] == "Non-":
+        name_list.insert(1, "Frozen")
+      else:
+        name_list.insert(0, "Frozen")
       name_list.append("Dessert")
     else:
       name_list.append(recipe.recipe_type[:-1])
     
     name = " ".join(name_list)
-    save_file = open(f"newly_generated_recipe/{recipe.recipe_type}/{name}.txt", "x")
 
     return name
 
@@ -247,8 +310,26 @@ class Chef_Raimsey:
     '''
     inferKit = InferKit(api_key='48016474-4a28-48d4-a3e2-b104d4f07451')
     text = "This recipe includes %s and %s," % (recipe.ingredients[0], recipe.ingredients[1])
-    response = inferKit.generate(text, length=40)
-    return response
+    summary = inferKit.generate(text, length=40)
+    #replace ingredients not in recipe with ones that are
+    tag_dict = preproccessing.create_tag_dict()
+    tagger = UnigramTagger(model = tag_dict)
+    summary_tokens = nltk.word_tokenize(summary)
+    needs_new_ingredient = []
+    ingredients = []
+    for line in recipe.ingredients:
+      ingredients.append(line[3])
+    for token in summary_tokens:
+      if token[1] == "ingredient":
+        if token[0] not in ingredients:
+          needs_new_ingredient.append(token[0])
+    for ingr in needs_new_ingredient:
+      try: #try and except in case the same ingredients appears more than once
+        summary.replace(ingr, random.choice(ingredients))
+      except:
+        pass
+
+    return summary
 
   #Maanya (completed)
   #accounts for multiple allergies
@@ -256,6 +337,7 @@ class Chef_Raimsey:
     '''
     First few words of the greatest dessert Chef ever.
     '''
+    ingredients_allergens = []
     name = input("Hi. This is Chef Raimsey! And what is your name? ")
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ")
@@ -285,11 +367,14 @@ class Chef_Raimsey:
           for i in range(len(allergies_list)):
               print(i, ") ", allergies_list[i])
           final_allergy = input("Which of these are you allergic to? Enter the specific ingredient as shown in the list above: ")
-          while final_allergy.capitalize() not in allergies_list:
+          while final_allergy.capitalize() not in allergies_list and final_allergy not in allergies_list and final_allergy.strip() not in allergies_list:
               final_allergy = input("The instructions asked you to enter the specific ingredient as shown in the list above. Try again: ")
-          ingredients_allergens = []
           print("Okay, thanks for sharing.", final_allergy.capitalize(), "will not be part of the recipe I generate for your dessert!")
-          ingredients_allergens.append(final_allergy)
+          if final_allergy.capitalize() == "All of the Above" or final_allergy == "All of the Above" or final_allergy.strip() == "All of the Above":
+              for k in range(len(allergies_list)-1):
+                  ingredients_allergens.append(allergies_list[k])
+          else:
+              ingredients_allergens.append(final_allergy)
           more_allergies = input("Do you have any more allergies I should know about? (Y/N) ")
           while more_allergies.upper() != "Y" and more_allergies.upper() != "N":
             more_allergies = input("I need a Yes or No response (Y/N). ")
@@ -298,6 +383,7 @@ class Chef_Raimsey:
             print("Alright, cool. We can move on then!")
     else:
         print("Alright, cool. We can move on then!")
+    return favorite_ingredient, ingredients_allergens
         
 #Maanya
 def main():

@@ -214,7 +214,6 @@ def resolve_ambiguity(tagged_ingredient):
   refined_ingredient = [cardinal,unit,prep,ingr] # if no values for slot, it will be None
   return refined_ingredient
       
-    
 # Yemi
 def update_frequently_seen_together_ingredients(list_of_ingredients,dictionary_of_frequently_seen_together_ingredients):
   for ingr in list_of_ingredients:
@@ -276,7 +275,14 @@ def allergen():
     return allergens_dict
 
 # Sue
-def process_ingredients():
+def create_ingredients_corpus(list_of_Recipes):
+    '''
+    ingredients: list of lists (each sublist looks like: [CD] [UNIT] [PREP] [ING])
+    for recipe in list_of_Recipes:
+        for list in recipe:
+            
+        every_recipe_list = recipe.ingredients
+    '''
     pass
 
 # Sue
@@ -288,7 +294,7 @@ def train_doc2vec(list_of_Recipes):
     name: name of the recipe
     type: type of the recipe (cookies, cakes, etc)
     summary: summary of the recipe
-    ingredients: list of tuples (ingredient, amount)
+    ingredients: list of lists (each sublist looks like: [CD] [UNIT] [PREP] [ING])
     '''
     documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(list_of_Recipes).ingredients]
     model = Doc2Vec(documents, vector_size=100, window=5, min_count=1, workers=4)

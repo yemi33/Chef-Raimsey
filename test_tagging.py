@@ -7,10 +7,10 @@ def nicole():
   # just quick test by Nicole
   # note that 1 cup is not taken a single unit, cup is NN
   # we will need a way to address this
-  # the medium article does this by creating their own tagging
   # each line is [cardinal][unit][ingredient]
 
   #TLDR; we need to clean up the ingredient lists
+  
   nltk.download("punkt")
   nltk.download('averaged_perceptron_tagger')
 
