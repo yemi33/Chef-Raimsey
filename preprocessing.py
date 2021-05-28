@@ -278,12 +278,15 @@ def allergen():
 def create_ingredients_corpus(list_of_Recipes):
     '''
     ingredients: list of lists (each sublist looks like: [CD] [UNIT] [PREP] [ING])
-    for recipe in list_of_Recipes:
-        for list in recipe:
-            
-        every_recipe_list = recipe.ingredients
     '''
-    pass
+    recipe_corpus = []
+    recipe_type_list = []
+    for recipe in list_of_Recipes:
+        for sublist in recipe.ingredients:
+            string = " ".join(sublist)
+            recipe_corpus.append(string)
+            recipe_type_list.append(recipe.recipe_type)
+    return recipe_corpus, recipe_type_list
 
 # Sue
 def train_doc2vec(list_of_Recipes):
@@ -296,13 +299,14 @@ def train_doc2vec(list_of_Recipes):
     summary: summary of the recipe
     ingredients: list of lists (each sublist looks like: [CD] [UNIT] [PREP] [ING])
     '''
-    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(list_of_Recipes).ingredients]
+    recipe_corpus, recipe_type_list = create_ingredients_corpus(list_of_Recipes)
+    documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(recipe_corpus)]
     model = Doc2Vec(documents, vector_size=100, window=5, min_count=1, workers=4)
     document_vectors = [model.dv[i] for i in range(len(documents))]
     model_export_data = []
-    for i, document in enumerate(list_of_Recipes):
+    for i, document in enumerate(recipe_corpus):
         document_vector = document_vectors[i]
-        document_topic = list_of_Recipes[i].recipe_type
+        document_topic = recipe_type_list[i]
         document_entry = (document_topic, document_vector)
         model_export_data.append(document_entry)
         # Convert to numpy array and save to file
