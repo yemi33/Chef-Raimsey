@@ -18,3 +18,7 @@ dozen,dozen
 sheets,sheets
 pounds,pounds
 pound,pound
+drops,drops
+drop,drop
+pint,pint
+quart,quart

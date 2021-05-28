@@ -1,3 +1,89 @@
+butter,butter
+white sugar,white_sugar
+unsalted butter,unsalted_butter
+baking powder,baking_powder
+vanilla extract,vanilla_extract
+almond extract,almond_extract
+(18.25 ounce) package yellow cake mix,(18.25_ounce)_package_yellow_cake_mix
+sour cream,sour_cream
+apricot brandy,apricot_brandy
+orange extract,orange_extract
+lemon extract,lemon_extract
+all-purpose flour,all-purpose_flour
+(3.5 ounce) package instant vanilla pudding mix,(3.5_ounce)_package_instant_vanilla_pudding_mix
+vegetable oil,vegetable_oil
+fresh blueberries,fresh_blueberries
+(16 ounce) package confectioners sugar,(16_ounce)_package_confectioners_sugar
+(8 ounce) package cream cheese,(8_ounce)_package_cream_cheese
+(3 ounce) package cream cheese,(3_ounce)_package_cream_cheese
+(8 ounce) container frozen whipped topping,(8_ounce)_container_frozen_whipped_topping
+(18.25 ounce) package devil's food cake mix,(18.25_ounce)_package_devil's_food_cake_mix
+(3.9 ounce) package instant chocolate pudding mix,(3.9_ounce)_package_instant_chocolate_pudding_mix
+semisweet chocolate chips,semisweet_chocolate_chips
+(16 ounce) package prepared chocolate frosting,(16_ounce)_package_prepared_chocolate_frosting
+candy-coated milk chocolate pieces,candy-coated_milk_chocolate_pieces
+red food coloring,red_food_coloring
+apricot preserves,apricot_preserves
+confectioners' sugar,confectioners'_sugar
+lemon juice,lemon_juice
+fresh blackberries,fresh_blackberries
+peaches,peaches
+self-rising flour,self-rising_flour
+pitted sour cherries,pitted_sour_cherries 
+heavy whipping cream,heavy_whipping_cream
+sweetened condensed milk,sweetened_condensed_milk
+heavy cream,heavy_cream
+Eagle Brand® Sweetened Condensed Milk, Eagle_Brand®_Sweetened_Condensed_Milk
+pecans,pecans 
+maple extract,maple_extract
+blueberries,blueberries
+graham cracker,graham_cracker 
+graham cracker crumbs,graham_cracker_crumbs
+butter
+vanilla ice cream,vanilla_ice_cream
+green tea powder (matcha),green_tea_powder_(matcha)
+(12 fluid ounce) can evaporated milk,(12_fluid_ounce)_can_evaporated_milk
+chocolate milk,chocolate_milk
+bananas,bananas
+banana,banana
+(10 ounce) packages frozen strawberries,(10_ounce)_packages_frozen_strawberries
+(15 ounce) can crushed pineapple,(15_ounce)_can_crushed_pineapple 
+pineapple,pineapple 
+nutmeg,nutmeg
+shortening,shortening 
+quick cooking oats,quick_cooking_oats 
+nuts,nuts
+butterscotch chips,butterscotch_chips
+brown sugar,brown_sugar
+baking soda,baking_soda
+unsweetened cocoa powder,unsweetened_cocoa_powder 
+packed brown sugar,packed_brown_sugar 
+canola oil,canola_oil
+oil,oil
+prune puree,prune_puree
+egg whites,egg_whites
+apricots,apricots
+package refrigerated pie crusts,package_refrigerated_pie_crusts
+pie crusts,pie_crusts
+package cream cheese,package_cream_cheese 
+cream cheese,cream_cheese 
+Granny Smith apples,Granny_Smith_apples
+apples,apples
+package almond paste,package_almond_paste 
+apricot jam,apricot_jam
+container blackberries,container_blackberries
+blackberries,blackberries
+jam,jam
+recipe pastry for a 9-inch double-crust pie,recipe_pastry_for_a_9-inch_double-crust_pie 
+lemon-lime flavored carbonated beverage,lemon-lime_flavored_carbonated_beverage
+dry milk powder,dry_milk_powder
+powder,powder
+baking mix,baking_mix 
+(16 ounce) package frozen peach slices,(16_ounce)_package_frozen_peach_slices 
+caramel ice cream topping,caramel_ice_cream_topping 
+flaky biscuit dough,flaky_biscuit_dough
+sweetened flaked coconut,sweetened_flaked_coconut 
+cold butter,cold_butter 
 dark brown sugar,dark_brown_sugar
 light brown sugar,light_brown_sugar
 brown sugar,brown_sugar
@@ -20,8 +106,7 @@ ground ginger,ground_ginger
 ground fennel seed,ground_fennel_seed
 fresh rosemary,fresh_rosemary
 ground cardamom,ground_cardamom
-ground nutmeg,ground_nutmeg
-grated nutmeg,grated_nutmeg
+nutmeg,nutmeg
 dried lavender,dried_lavender
 ground allspice,ground_allspice
 candied ginger,candied_ginger
@@ -35,6 +120,11 @@ salt,salt
 unsalted butter,unsalted_butter
 salted butter,salted_butter
 butter,butter
+cheese,cheese
+(3.5 ounce) packages instant banana pudding mix,(3.5_ounce)_packages_instant_banana_pudding_mix 
+container frozen whipped topping,container_frozen_whipped_topping 
+(8 ounce) container frozen whipped topping,(8_ounce)_container_frozen_whipped_topping
+(15 ounce) package pastry for a double crust 9-inch pie,(15_ounce)_package_pastry_for_a_double_crust_9-inch_pie
 margarine,margarine
 M&M's,M&M's
 shredded zucchini,shredded_zucchini
@@ -90,7 +180,6 @@ baking spray,baking_spray
 old fashioned rolled oats,old_fashioned_rolled_oats
 old-fashioned rolled oats,old-fashioned_rolled_oats
 old-fashioned oats,old-fashioned_oats
-rolled oats,rolled_oats
 quick oats,quick_oats
 oatmeal,oatmeal
 oats,oats
@@ -98,19 +187,16 @@ pitted medjool dates,pitted_medjool_dates
 dried pitted dates,dried_pitted_dates
 dried figs,dried_figs
 dried apricots,dried_apricots
-chopped walnuts,chopped_walnuts
 walnut pieces,walnut_pieces
-toasted walnuts,toasted_walnuts
 walnuts,walnuts
-toasted pecans,toasted_pecans
 pecan pieces,pecan_pieces
 pecans,pecans
 pine nuts,pine_nuts
 macadamia nuts,macadamia_nuts
 currants,currants
-dried cherries,dried_cherries
-dried cranberries,dried_cranberries
-dried fruit,dried_fruit
+cherries,cherries
+cranberries,cranberries
+fruit,fruit
 strawberry jam,strawberry_jam
 raspberry jam,raspberry_jam
 cherry jam,cherry_jam

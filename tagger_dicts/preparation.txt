@@ -1,15 +1,37 @@
-finely chopped
-roughly chopped
-chopped
-zested
-packed
-sliced
-grated
-toasted
-softened
-scraped
-beaten
-sifted
-shredded
-crushed
-ground
+finely chopped,finely_chopped
+roughly chopped,roughly_chopped
+chopped,chopped
+zested,zested
+packed,packed
+sliced,sliced
+grated,grated
+toasted,toasted
+softened,softened
+scraped,scraped
+beaten,beaten
+sifted,sifted
+shredded,shredded
+crushed,crushed
+ground,ground
+room temperature,room_temperature
+thawed,thawed
+toasted,toasted
+toasted*,toasted
+melted,melted
+diced,diced
+mashed,mashed
+flaked,flaked
+rolled,rolled
+dried,dried
+room temperature,room_temperature
+peeled,peeled
+cored,cored
+thinly sliced,thinly_sliced
+halved,halved
+cored,cored
+divided,divided
+refrigerated,refrigerated
+boiling,boiling
+cold,cold
+rinsed,rinsed
+drained,drained

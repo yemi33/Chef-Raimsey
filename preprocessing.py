@@ -1,6 +1,7 @@
 from nltk.tag import UnigramTagger
 from nltk.corpus import treebank
 import os
+import re
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import numpy as np
 
@@ -46,60 +47,108 @@ def create_tag_dict():
     
     f = open("tagger_dicts/ingredients.txt", "r")
     for line in f:
+      try:
         split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
         tag_dict[split_string[1].strip()] = "ING"
+      except:
+        continue
     
     f = open("tagger_dicts/preparation.txt", "r")
     for line in f:
-        tag_dict[line.strip()] = "PREP"
+      try:
+        split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
+        tag_dict[split_string[1].strip()] = "PREP"
+      except:
+        continue
     
     f = open("tagger_dicts/unit.txt", "r")
     for line in f:
+      try:
         split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
         tag_dict[split_string[1].strip()] = "UNIT"
+      except:
+        continue
     
     return tag_dict
 
 # Yemi
-def preprocess():
+def preprocess(test=False):
     # 1) we pos tag using nltk's Unigram tagger (customizable) 
     # train Unigram tagger with our tag_dictionary 
     tag_dict = create_tag_dict()
     tagger = UnigramTagger(model = tag_dict)
     dictionary_of_frequently_seen_together_ingredients = dict()
     dictionary_of_frequently_used_amount = dict()
+    dictionary_of_frequently_prepared_method = dict()
+    dictionary_of_frequently_used_unit = dict()
     list_of_recipes = list()
     
-    for foldername in os.listdir("corpus"):
-      for filename in os.listdir(f"corpus/{foldername}"):
-        f = open(f"corpus/{foldername}/{filename}").read().split("\n")
+    corpus_folder_name = "corpus"
+
+    if test:
+      corpus_folder_name = "test_corpus"
+
+    for foldername in os.listdir(corpus_folder_name):
+      for filename in os.listdir(f"{corpus_folder_name}/{foldername}"):
+        f = open(f"{corpus_folder_name}/{foldername}/{filename}").read()
+        f = f.replace(",","").strip() #butter, != butter
+        # correct instances where it's like: brown sugar --> brown_sugar, so when tagging, this becomes a single word
+        ingredient_list = open(f"tagger_dicts/ingredients.txt").read().split("\n")
+        for ingr in ingredient_list:
+          ingr_sublist = ingr.split(",") # line structure: brown sugar,brown_sugar
+          # try replacing 
+          try:
+            f = f.replace(ingr_sublist[0].strip(),ingr_sublist[1].strip())
+          # if error, just move onto the next potential replaceable ingredient
+          except:
+            continue
+        
+        # correct instances where it's like: room temperature --> room_temperature, so when tagging, this becomes a single word
+        preparation_list = open(f"tagger_dicts/preparation.txt").read().split("\n")
+        for prep in preparation_list:
+          prep_sublist = prep.strip().split(",") # line structure: brown sugar,brown_sugar
+          # try replacing 
+          try:
+            f = f.replace(prep_sublist[0].strip(),prep_sublist[1].strip())
+          # if error, just move onto the next potential replaceable ingredient
+          except:
+            continue
+        
+        # after removing punctuations and replacing multi-words into single words
+        # pos tag ingredient list and create a Recipe object
+        f = f.split("\n")
         name = f[0]
+        print(name)
         dessert_type = foldername
         summary = f[2]
-        ingredients = "\n".join(f[4:])
-        tagged_name = tagger.tag(name)
-        tagged_summary = tagger.tag(summary)
-        tagged_ingredients = tagger.tag(ingredients)
-        print(tagged_ingredients)
-        # 1-1) resolve ambiguity in ingredient description 
-    #     fixed_ingredients = resolve_ambiguity(tagged_ingredients)
+        ingredients = f[4:]
+        for ingr in ingredients:
+          ingr = ingr.split(" ") # for some reason nltk punkt tokenizer doesn't work
+          tagged_ingredient = tagger.tag(ingr)
+          print(tagged_ingredient)
+        
+        list_of_ingredients = []
+        for resolve ambiguity in ingredient description: 
+          fixed_ingredients = resolve_ambiguity(tagged_ingredients)
+          # 4) we also create a dictionary of frequently seen-together measurements and ingredients
+          # where key: ingredient, value: a list of measurements for this ingredient
+          find_frequently_seen_used_amount(fixed_ingredients,dictionary_of_frequently_used_amount)
+          find_frequently_seen_used_unit(fixed_ingredients,dictionary_of_frequently_used_unit)
+          find_frequently_prepared_method(fixed_ingredients, dictionary_of_frequently_prepared_method)
+          list_of_ingredients.append(fixed_ingredients)
 
-    #     # 3) we also create a dictionary of frequently seen-together ingredients 
-    #     # where key: ingredient, value: list of ingredients that appeared together
-    #     find_frequently_seen_together_ingredients(fixed_ingredients, dictionary_of_frequently_seen_together_ingredients)
-    #     # 4) we also create a dictionary of frequently seen-together measurements and ingredients
-    #     # where key: ingredient, value: a list of measurements for this ingredient
-    #     find_frequently_seen_used_amount(fixed_ingredients,dictionary_of_frequently_used_amount)
+        # 3) we also create a dictionary of frequently seen-together ingredients 
+        # where key: ingredient, value: list of ingredients that appeared together
+        find_frequently_seen_together_ingredients(list_of_ingredients, dictionary_of_frequently_seen_together_ingredients)
+        # 2) create Recipe objects and a list of recipe summaries (name,summary, list of ingredients)
+        recipe = Recipe(name=name, summary=summary, ingredients=list_of_ingredients, recipe_type=dessert_type)
+        list_of_recipes.append(recipe)
 
-    #     # 2) create Recipe objects and a list of recipe summaries (name,summary, list of ingredients)
-    #     recipe = Recipe(name=name, summary=summary, ingredients=fixed_ingredients, recipe_type=dessert_type)
-    #     list_of_recipes.append(recipe)
-
-    # # output: 
-    # # 1) list of Recipe Objects 
-    # # 2) dictionary of ingredients 
-    # # 3) dictionary of measurements
-    # return list_of_recipes, dictionary_of_frequently_seen_together_ingredients,dictionary_of_frequently_used_amount
+    # output: 
+    # 1) list of Recipe Objects 
+    # 2) dictionary of ingredients 
+    # 3) dictionary of measurements
+    return list_of_recipes, dictionary_of_frequently_seen_together_ingredients,dictionary_of_frequently_used_amount,dictionary_of_frequently_used_unit,dictionary_of_frequently_prepared_method)
     
 
 # Yemi
@@ -114,38 +163,48 @@ def resolve_ambiguity(tagged_ingredients):
       1 cup butterscotch or peanut butter chips. This is of the form [cardinal] [unit] [ingredient] [none] [ingredient]. One difficulty here is that the second ingredient is actually describing both ingredients: they mean butterscotch chips or peanut butter chips. This was resolved by choosing the second ingredient, rather than the first.
 
       1 to 2 tablespoons oil. This is of the form [cardinal] [none] [cardinal] [unit] [ingredient], and was resolved by averaging the two cardinals.
-    
-    find a cardinal
-    see if the next thing is a unit
-    if yes, 
-      check if the next thing is a ingredient
-        if yes,
-          cut off the list here 
-        else if the next thing is a none,
-          check if the next thing is a cardinal,
-            if yes, 
-              use a dictionary to add the first cardinal to the second cardinal,
-              and replace original list to [added_cardinal] [unit] [ingredient]
-      else if the next thing is prep,
-        check if the next thing is an ingredient, 
-          if yes, 
-            cut off the list here 
-    else if the next thing is none,
-      check if the next thing is cardinal,
-        if yes, 
-          average the first cardinal to the second cardinal 
-          and replace original list to [averaged_cardinal] [unit] [ingredient]
-
     '''
-    
-    pass
 
+    cardinal = [tagged_ingredients[0][0]] # [('1', 'CD'), ('cup', 'UNIT'), ('butter,', None), ('softened', 'PREP'), ('', None)]
+    add_cardinals = False
+    unit = []
+    prep = []
+    ingr = []
+    for i in range(1,len(tagged_ingredients)):
+      if tagged_ingredients[i][1] == "CD":
+        if tagged_ingredient[i-1][0] == "plus":
+          add_cardinals = True
+        cardinal.append(tagged_ingredients[i][0])
+      if tagged_ingredients[i][1] == "UNIT":
+        unit.append(tagged_ingredients[i][0])
+      elif tagged_ingredients[i][1] == "PREP":
+        prep.append(tagged_ingredients[i][0])
+      elif tagged_ingredients[i][1] == "ING":
+        ingr = tagged_ingredients[i][0]
+    
+    # do something with the lists 
+
+    # check if there are multiple cardinals
+      # check add_cardinals is True
+        # add the two cardinals 
+      # average the two cardinals 
+    # reassign cardinals to these calculated values 
+    refined_ingredient = [cardinal,unit,prep,ingr]
+    return refined_ingredient
+      
+    
 # Yemi
 def find_frequently_seen_together_ingredients(fixed_ingredients,dictionary_of_frequently_seen_together_ingredients):
-  pass
+  # 
 
 # Yemi
 def find_frequently_seen_used_amount(fixed_ingredients,dictionary_of_frequently_used_amount):
+  pass
+
+def find_frequently_seen_used_unit(fixed_ingredients,dictionary_of_frequently_used_unit):
+  pass
+
+def find_frequently_prepared_method(fixed_ingredients, dictionary_of_frequently_prepared_method):
   pass
 
 
@@ -193,4 +252,4 @@ def train_doc2vec(list_of_Recipes):
     outfile.close()
 
 if __name__ == "__main__":  
-  preprocess()
+  preprocess(test=True)
