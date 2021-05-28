@@ -57,5 +57,8 @@ def yemi():
   [('Pierre', 'NNP'), ('Vinken', 'NNP'), (',', ','), ('61', 'CD'), ('years', 'NNS'), ('old', 'JJ'), (',', ','), ('will', 'MD'), ('join', 'VB'), ('the', 'DT'), ('board', 'NN'), ('as', 'IN'), ('a', 'DT'), ('nonexecutive', 'JJ'), ('director', 'NN'), ('Nov.', 'NNP'), ('29', 'CD'), ('.', '.')]
   '''
 
+def init():
+  print("blueberries" in "fresh_blueberries")
+
 if __name__ == "__main__":
-  yemi()
+  init()

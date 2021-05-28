@@ -17,11 +17,8 @@ class Chef_Raimsey:
   Class that represents a Chef Raimsey simulation.
   '''
   #Nicole
-  def __init__(self):
-    # 1) list of Recipe Objects 
-    # 2) dictionary of ingredients and paired ingredients
-    # 3) dictionary of ingredients and paired measurements
-    self.recipe_list, self.ingredients,self.measurements = preprocessing.preprocess()
+  def __init__(self,test=False):
+    self.recipe_list, self.ingredients, self.amount, self.unit, self.prep = preprocessing.preprocess(test=test)
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -33,8 +30,18 @@ class Chef_Raimsey:
     Returns:
       a frequently paired ingredient 
     '''
-    paired_ingredients = self.ingredients[ingredient]
-    return random.choice(paired_ingredients)
+    try:
+      paired_ingredients = self.ingredients[ingredient]
+      return random.choice(list(paired_ingredients))
+    except:
+      for key in self.ingredients.keys():
+        if ingredient in key or key in ingredient:
+          try:
+            paired_ingredients = self.ingredients[key]
+            return random.choice(list(paired_ingredients))
+          except KeyError:
+            return ""
+      return ""
 
   #Nicole
   def find_frequently_used_amount(self, ingredient):
@@ -46,8 +53,64 @@ class Chef_Raimsey:
     Returns:
       amount that the ingredient is frequently used for.
     '''
-    paired_measurements = self.measurements[ingredient]
-    return random.choice(paired_measurements)
+    try:
+      paired_amount = self.amount[ingredient]
+      return random.choice(list(paired_amount))
+    except:
+      for key in self.ingredients.keys():
+        if ingredient in key or key in ingredient:
+          try:
+            paired_amount = self.amount[key]
+            return random.choice(list(paired_amount))
+          except KeyError:
+            return ""
+      return ""
+  
+  #Yemi
+  def find_frequently_used_unit(self, ingredient):
+    '''
+    Method to find a frequently used unit of the ingredient.
+
+    Args:
+      ingredient: ingredient
+    Returns:
+      unit that the ingredient frequently uses.
+    '''
+    try:
+      paired_unit = self.unit[ingredient]
+      return random.choice(list(paired_unit))
+    except:
+      for key in self.ingredients.keys():
+        if ingredient in key or key in ingredient:
+          try:
+            paired_unit = self.unit[key]
+            return random.choice(list(paired_unit))
+          except KeyError:
+            return ""
+      return ""
+  
+  #Yemi
+  def find_frequently_used_prep(self, ingredient):
+    '''
+    Method to find a frequently used prep of the ingredient.
+
+    Args:
+      ingredient: ingredient
+    Returns:
+      frequent prep methods of ingredient.
+    '''
+    try:
+      paired_prep = self.prep[ingredient]
+      return random.choice(list(paired_prep))
+    except:
+      for key in self.ingredients.keys():
+        if ingredient in key or key in ingredient:
+          try:
+            paired_prep = self.prep[key]
+            return random.choice(list(paired_prep))
+          except KeyError:
+            return ""
+      return ""
 
   #Maanya
   def num_of_ingredients(self):
@@ -57,7 +120,7 @@ class Chef_Raimsey:
     number_of_ingredients = random.randint(6, 12)
     return number_of_ingredients
 
-  #Nicole
+  #Nicole - recipe ingredient list generation complete
   def generate(self, user_favorite_food):
     '''
     Uses user's favorite ingredient or food to initiate the recipe generation process.
@@ -68,22 +131,28 @@ class Chef_Raimsey:
       A recipe object
     '''
     # start generation process off of the user's favorite food
-    new_recipe = preprocessing.Recipe("","",[],"")
+    new_recipe = preprocessing.Recipe(name="",summary="",ingredients=[],recipe_type="")
+    
     #get user favorite ingredient amount, then append to ingredient list
-    fav_ingredient_measurement = self.find_frequently_used_amount(user_favorite_food)
-    new_recipe.ingredients.append(fav_ingredient_measurement + " " + user_favorite_food)
+    fav_ingredient_amount = self.find_frequently_used_amount(user_favorite_food)
+    fav_ingredient_unit = self.find_frequently_used_unit(user_favorite_food)
+    fav_ingredient_prep = self.find_frequently_used_prep(user_favorite_food)
+    new_recipe.ingredients.append([fav_ingredient_amount,fav_ingredient_unit,fav_ingredient_prep,user_favorite_food]) # this should be a len 4 list
+    
     #start a for loop to add all the other ingredient
     last_ingredient = user_favorite_food
-    num_ingredients = self.num_of_ingredients()
-    for i in range(num_ingredients):
+    for i in range(self.num_of_ingredients()):
       next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
-      next_measurement = self.find_frequently_used_amount(next_ingredient)
-      new_recipe.ingredients.append(next_measurement + " " + next_ingredient)
+      next_amount = self.find_frequently_used_amount(next_ingredient)
+      next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
+      next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+      new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient]) # this should be a len 4 list
       last_ingredient = next_ingredient
-    
+    print(new_recipe.ingredients)
     new_recipe.name = self.name_recipe(new_recipe)
-    new_recipe.recipe_type = self.categorize(new_recipe)
-    new_recipe.summary = self.create_summary(new_recipe)
+    print(new_recipe.name)
+    # new_recipe.recipe_type = self.categorize(new_recipe)
+    # new_recipe.summary = self.create_summary(new_recipe)
     
     return new_recipe
 
@@ -235,8 +304,9 @@ def main():
   '''
   Method to get the Chef working!
   '''
-  chef = Chef_Raimsey()
-  chef.conversation_starter()
+  chef = Chef_Raimsey(test=True)
+  # chef.conversation_starter()
+  chef.generate("blueberries")
   
 if __name__ == "__main__":
   main()
