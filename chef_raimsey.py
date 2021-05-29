@@ -138,7 +138,6 @@ class Chef_Raimsey:
     user_favorite_food = self.favorite_ingredient
     # start generation process off of the user's favorite food
     new_recipe = preprocessing.Recipe(name="",summary="",ingredients=[],recipe_type="")
-    
     #get user favorite ingredient amount, then append to ingredient list
     fav_ingredient_amount = self.find_frequently_used_amount(user_favorite_food)
     fav_ingredient_unit = self.find_frequently_used_unit(user_favorite_food)
@@ -198,6 +197,9 @@ class Chef_Raimsey:
     final_ingredients = []
     for i in recipe.ingredients:
       ingredient_string = ""
+      if i[0] == "" and i[1] == "" and i[3] != "":
+          i[0] = "1"
+          i[1] = "cup"
       if "\u2009" in i[0]:
           i[0] = i[0].replace("\u2009", " and ")
       try:
@@ -220,7 +222,7 @@ class Chef_Raimsey:
       final_ingredients.append(ingredient_string)
 
     final_ingredients_string = "\n".join(final_ingredients)
-    
+    final_ingredients_string.replace("\n\n", "\n")
     generated_recipe = recipe.name + "\n\n" + recipe.summary + "\n\n" + final_ingredients_string
     return generated_recipe
   
@@ -298,10 +300,11 @@ class Chef_Raimsey:
       random_choice = random.choice(self.list_of_allergies)
       if random_choice.lower().strip() == "all of the above":
         random_choice = self.main_allergen
-      string = "Non-" + random_choice.capitalize()
+      random_choice.replace("_", "-")
+      string = "Non-" + random_choice.title()
       name_list.append(string)
 
-    name_list.append(self.favorite_ingredient.capitalize())
+    name_list.append(self.favorite_ingredient.replace("_", "-").title())
     if recipe.recipe_type == "Frozen desserts":
       if name_list[0][:3] == "Non-":
         name_list.insert(1, "Frozen")
@@ -360,8 +363,28 @@ class Chef_Raimsey:
         summary.replace(ingr, random.choice(ingredients))
       except:
         pass
-
-    return text + " " + summary
+    summary = text + " " + summary
+    index_sent_period, index_sent_exclaim, index_sent_question, index_sent_comma = 0, 0, 0, 0
+    if summary.count(".") > 0:
+        index_sent_period = summary.rindex(".")
+    if summary.count("!") > 0:
+        index_sent_exclaim = summary.rindex("!")
+    if summary.count("?") > 0:
+        index_sent_question = summary.rindex("?")
+    if summary.count(",") > 0:
+        index_sent_comma = summary.rindex(",")
+    index_sent = max(index_sent_period, index_sent_exclaim, index_sent_question, index_sent_comma)
+    if index_sent == index_sent_comma:
+        index_sent = index_sent - 1
+    if index_sent > 0:
+        summary = summary[:index_sent+1]
+    summary.replace("\n", " ")
+    summary.replace("\n\n", " ")
+    summary.replace("  ", " ")
+    if summary[len(summary)-1] != "." or summary[len(summary)-1] != "!" or summary[len(summary)-1] != ",":
+        index = summary.rindex(" ")
+        summary = summary[:index]
+    return summary
 
   #Maanya (completed)
   #accounts for multiple allergies
@@ -375,6 +398,9 @@ class Chef_Raimsey:
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ").lower()
     print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
+    if favorite_ingredient not in self.ingredients.keys():
+        print("Sorry, we don't have your ingredient in our recipe shelf but let's see what we can concoct for you! ")
+        favorite_ingredient = random.choice(list(self.ingredients.keys()))
     allergic = input("And do you have any allergies that I should be aware of (Y/N)? ")
     while allergic.upper() != "Y" and allergic.upper() != "N":
         allergic = input("I need a Yes or No response (Y/N). ")
@@ -425,6 +451,7 @@ def main():
   Method to get the Chef working!
   '''
   chef = Chef_Raimsey(test=True)
+  print("\n")
   print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()
 
