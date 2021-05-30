@@ -16,6 +16,7 @@ pip install gensim
 pip install python-Levenshtein
 '''
 
+# fix summary/ allergens
 class Chef_Raimsey:
   '''
   Class that represents a Chef Raimsey simulation.
@@ -159,7 +160,7 @@ class Chef_Raimsey:
       added_ingredients.append(next_ingredient)
       new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient])
       last_ingredient = next_ingredient
-    # print(new_recipe.ingredients)
+      # print(new_recipe.ingredients)
 
     new_recipe.recipe_type = self.categorize(new_recipe).strip()
     new_recipe.name = self.name_recipe(new_recipe).strip()
@@ -364,6 +365,7 @@ class Chef_Raimsey:
       except:
         pass
     summary = text + " " + summary
+    #the next few commands help format the summary so that it is more coherent and doesn't end mid word.
     index_sent_period, index_sent_exclaim, index_sent_question, index_sent_comma = 0, 0, 0, 0
     if summary.count(".") > 0:
         index_sent_period = summary.rindex(".")
@@ -374,16 +376,19 @@ class Chef_Raimsey:
     if summary.count(",") > 0:
         index_sent_comma = summary.rindex(",")
     index_sent = max(index_sent_period, index_sent_exclaim, index_sent_question, index_sent_comma)
-    if index_sent == index_sent_comma:
-        index_sent = index_sent - 1
+    # if index_sent == index_sent_comma:
+    #     index_sent = index_sent - 1
     if index_sent > 0:
         summary = summary[:index_sent+1]
-    summary.replace("\n", " ")
-    summary.replace("\n\n", " ")
-    summary.replace("  ", " ")
+    summary = summary.replace("\n", " ")
+    summary = summary.replace("\n\n", " ")
+    summary = summary.replace("\n\n\n", " ")
+    summary = summary.replace("  ", " ")
     if summary[len(summary)-1] != "." or summary[len(summary)-1] != "!" or summary[len(summary)-1] != ",":
         index = summary.rindex(" ")
         summary = summary[:index]
+    if summary[len(summary)-1] == ",":
+        summary[:len(summary)-1]
     return summary
 
   #Maanya (completed)
@@ -398,7 +403,9 @@ class Chef_Raimsey:
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ").lower()
     print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
-    if favorite_ingredient not in self.ingredients.keys():
+    favorite_ingredient = favorite_ingredient.lower()
+    res = [val for key, val in self.ingredients.items() if favorite_ingredient in key]
+    if len(res) == 0:
         print("Sorry, we don't have your ingredient in our recipe shelf but let's see what we can concoct for you! ")
         favorite_ingredient = random.choice(list(self.ingredients.keys()))
     allergic = input("And do you have any allergies that I should be aware of (Y/N)? ")
