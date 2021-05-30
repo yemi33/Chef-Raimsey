@@ -3,7 +3,7 @@ import preprocessing
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import numpy as np
 from scipy import spatial
-# from graphics import *
+from chef_raimsey_graphic import *
 from InferKit.InferMain import InferKit
 from nltk.tag import UnigramTagger
 import nltk
@@ -22,9 +22,12 @@ class Chef_Raimsey:
   Class that represents a Chef Raimsey simulation.
   '''
   #Nicole
-  def __init__(self,test=False):
+  def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
-    self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
+    if not gui:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
+    else:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = conversation_starter_graphic(self.ingredients)
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -402,12 +405,17 @@ class Chef_Raimsey:
     name = input("Hi. This is Chef Raimsey! And what is your name? ").capitalize()
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ").lower()
-    print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
-    favorite_ingredient = favorite_ingredient.lower()
-    res = [val for key, val in self.ingredients.items() if favorite_ingredient in key]
-    if len(res) == 0:
-        print("Sorry, we don't have your ingredient in our recipe shelf but let's see what we can concoct for you! ")
-        favorite_ingredient = random.choice(list(self.ingredients.keys()))
+    if favorite_ingredient in list(self.ingredients.keys()):
+      print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
+      favorite_ingredient = favorite_ingredient.lower()
+    else:
+      res = [key for key in self.ingredients.keys() if favorite_ingredient in key]
+      if len(res) == 0:
+          print("Sorry, we don't have your ingredient in our recipe shelf but let's see what we can concoct for you! ")
+          favorite_ingredient = random.choice(list(self.ingredients.keys()))
+      else:
+        print(favorite_ingredient.capitalize(), "! Yummy, good choice!!")
+        favorite_ingredient = res[0]
     allergic = input("And do you have any allergies that I should be aware of (Y/N)? ")
     while allergic.upper() != "Y" and allergic.upper() != "N":
         allergic = input("I need a Yes or No response (Y/N). ")
@@ -457,7 +465,7 @@ def main():
   '''
   Method to get the Chef working!
   '''
-  chef = Chef_Raimsey(test=True)
+  chef = Chef_Raimsey(gui=True)
   print("\n")
   print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()

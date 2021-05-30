@@ -1,6 +1,8 @@
 from graphics import *
+import random 
+import preprocessing
 
-def conversation_starter_graphic():
+def conversation_starter_graphic(ingredients_dict):
   '''
   First few words of the greatest dessert Chef ever.
   '''
@@ -22,7 +24,6 @@ def conversation_starter_graphic():
   while window.getKey() != "Return":
     name = entry.getText().capitalize()
   name = entry.getText().capitalize()
-  print(name)
   entry.undraw()
 
   message.undraw()
@@ -42,22 +43,29 @@ def conversation_starter_graphic():
   while window.getKey() != "Return":
     favorite_ingredient = entry.getText().capitalize()
   favorite_ingredient = entry.getText().lower()
-  print(favorite_ingredient)
   entry.undraw()
   message.undraw()
 
-  if favorite_ingredient not in self.ingredients.keys():  
-      reply.setText("Sorry, we don't have your ingredient in our recipe shelf \nbut let's see what we can concoct for you! ")
-      reply.draw(window)
-      favorite_ingredient = random.choice(list(self.ingredients.keys()))
-      while window.getKey() != "Return":
-        reply.setSize(20)
-  else:
+  if favorite_ingredient in list(ingredients_dict.keys()):
     reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
     reply.draw(window)
     while window.getKey() != "Return":
       reply.setSize(20)
-
+  else:
+    res = [key for key in ingredients_dict.keys() if favorite_ingredient in key]
+    if len(res) == 0:
+        reply.setText("Sorry, we don't have your ingredient in our recipe shelf \nbut let's see what we can concoct for you! ")
+        reply.draw(window)
+        favorite_ingredient = random.choice(list(ingredients_dict.keys()))
+        while window.getKey() != "Return":
+          reply.setSize(20)
+    else:
+      reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
+      reply.draw(window)
+      while window.getKey() != "Return":
+        reply.setSize(20)
+      favorite_ingredient = res[0]
+    
   reply.undraw()
   message.setText("And do you have any allergies that I should be aware of (Y/N)? ")
   message.draw(window)
@@ -81,7 +89,6 @@ def conversation_starter_graphic():
     elif inside(clickPoint,button_no):
       break
   
-  print(allergic)
   button_yes.undraw()
   button_yes_text.undraw()
   button_no.undraw()
