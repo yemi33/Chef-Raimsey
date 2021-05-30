@@ -25,6 +25,8 @@ class Chef_Raimsey:
   def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
     if not gui:
+      graphic = open('ramsayascii.txt').read()
+      print(graphic)
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
     else:
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = conversation_starter_graphic(self.ingredients)
@@ -465,7 +467,7 @@ def main():
   '''
   Method to get the Chef working!
   '''
-  chef = Chef_Raimsey(gui=True)
+  chef = Chef_Raimsey(gui=False)
   print("\n")
   print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()
