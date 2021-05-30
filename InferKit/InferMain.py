@@ -1,5 +1,7 @@
 import sys, os
-sys.path.append('/home/runner/Final-Project-carlcs322s01s21-2/InferKit')
+sys.path.append('/Users/yemishin/Desktop/Final-Project-carlcs322s01s21-2/InferKit') # for Yemi's local
+# sys.path.append('/home/runner/Final-Project-carlcs322s01s21-2/InferKit') # for repl
+
 import requests
 import InferErrors as errors
 import InferLog as log

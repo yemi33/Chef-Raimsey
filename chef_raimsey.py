@@ -3,10 +3,11 @@ import preprocessing
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import numpy as np
 from scipy import spatial
-# from graphics import *
+import sys
 from InferKit.InferMain import InferKit
 from nltk.tag import UnigramTagger
 import nltk
+from chef_raimsey_graphic import *
 # nltk.download('punkt')
 
 '''
@@ -21,9 +22,12 @@ class Chef_Raimsey:
   Class that represents a Chef Raimsey simulation.
   '''
   #Nicole
-  def __init__(self,test=False):
+  def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
-    self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
+    if gui:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = conversation_starter_graphic()
+    else:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -444,13 +448,13 @@ class Chef_Raimsey:
     else:
         print("Alright, cool. We can move on then!")
     return name, favorite_ingredient, ingredients_allergens, main_allergen
-        
+
 #Maanya
 def main():
   '''
   Method to get the Chef working!
   '''
-  chef = Chef_Raimsey(test=True)
+  chef = Chef_Raimsey(gui=True)
   print("\n")
   print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()

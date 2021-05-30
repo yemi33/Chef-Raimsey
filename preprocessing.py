@@ -41,11 +41,11 @@ class Recipe: #moved here because circular import error
 def create_tag_dict():
     tag_dict = dict()
 
-    f = open("tagger_dicts/cardinalities.txt", "r")
+    f = open("tagger_dicts/cardinalities.txt", "r").read().strip().split("\n")
     for line in f:
         tag_dict[line.strip()] = "CD"
     
-    f = open("tagger_dicts/ingredients.txt", "r")
+    f = open("tagger_dicts/ingredients.txt", "r").read().strip().split("\n")
     for line in f:
       try:
         split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
@@ -53,7 +53,7 @@ def create_tag_dict():
       except:
         continue
     
-    f = open("tagger_dicts/preparation.txt", "r")
+    f = open("tagger_dicts/preparation.txt", "r").read().strip().split("\n")
     for line in f:
       try:
         split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
@@ -61,7 +61,7 @@ def create_tag_dict():
       except:
         continue
     
-    f = open("tagger_dicts/unit.txt", "r")
+    f = open("tagger_dicts/unit.txt", "r").read().strip().split("\n")
     for line in f:
       try:
         split_string = line.split(",") # line looks like: chocolate syrup,chocolate_syrup
@@ -118,7 +118,6 @@ def preprocess(test=False):
       # pos tag ingredient list and create a Recipe object
       f = f.split("\n")
       name = f[0]
-      # print(name)
       dessert_type = foldername
       summary = f[2]
       ingredients = f[4:]
@@ -126,7 +125,6 @@ def preprocess(test=False):
       for ingr in ingredients:
         ingr = ingr.split(" ") # for some reason nltk punkt tokenizer doesn't work
         tagged_ingredient = tagger.tag(ingr)
-        # print(tagged_ingredient)
         fixed_ingredient = resolve_ambiguity(tagged_ingredient)
         # print(fixed_ingredient)
         update_frequently_seen_used_amount(fixed_ingredient,dictionary_of_frequently_used_amount) 
@@ -141,27 +139,22 @@ def preprocess(test=False):
 
   return list_of_recipes, dictionary_of_frequently_seen_together_ingredients, dictionary_of_frequently_used_amount, dictionary_of_frequently_used_unit, dictionary_of_frequently_prepared_method, model
     
-
 # Yemi
 def resolve_ambiguity(tagged_ingredient):
   #refer to Medium article
   ingr = ""
   cardinal = []
-  if tagged_ingredient[0][1] == "ING":
-    ingr = tagged_ingredient
-  else:
-    cardinal.append(tagged_ingredient[0][0]) # [('1', 'CD'), ('cup', 'UNIT'), ('butter,', None), ('softened', 'PREP'), ('', None)]
   unit = []
   prep = []
 
-  for i in range(1,len(tagged_ingredient)):
-    if tagged_ingredient[i][1] == "CD":
+  for i in range(0,len(tagged_ingredient)):
+    if tagged_ingredient[i][1] == "CD" or "\u2009" in tagged_ingredient[i][0]:
       cardinal.append(tagged_ingredient[i][0])
     elif tagged_ingredient[i][1] == "UNIT":
       unit.append(tagged_ingredient[i][0])
     elif tagged_ingredient[i][1] == "PREP":
       prep.append(tagged_ingredient[i][0])
-    elif tagged_ingredient[i][1] == "ING":
+    elif tagged_ingredient[i][1] == "ING" :
       ingr = tagged_ingredient[i][0]
   
   # key: unit->unit_to_translate_into / value: constant to multiply
@@ -196,8 +189,9 @@ def resolve_ambiguity(tagged_ingredient):
     unit = unit[0]
     # if there's a single unit and multiple cardinals, average the cardinals
     if len(cardinal) > 1:
-      sum = sum(cardinal)
-      avg = sum / len(cardinal)
+      cardinal = list(map(int, cardinal))
+      sum_cardinal = sum(cardinal)
+      avg = sum_cardinal / len(cardinal)
       # set the new cardinal to be the average of all the cardinals
       cardinal = avg
       # choose the unit as the first thing in the unit list
@@ -207,13 +201,17 @@ def resolve_ambiguity(tagged_ingredient):
       cardinal = ""
   else:
     unit = ""
-    cardinal = cardinal[0]
+    try:
+      cardinal = cardinal[0]
+    except:
+      cardinal = ""
   if len(prep) > 0:
     prep = ", ".join(prep)
   else:
     prep = "" 
 
   refined_ingredient = [cardinal,unit,prep,ingr] # if no values for slot, it will be None
+  # print(refined_ingredient)
   return refined_ingredient
       
 # Yemi
