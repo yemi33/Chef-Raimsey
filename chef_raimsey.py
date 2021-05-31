@@ -24,12 +24,14 @@ class Chef_Raimsey:
   def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
     self.gui = gui
-    if not self.gui:
+    self.chef_raimsey_graphic = Chef_Raimsey_Graphic()
+    if self.gui:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic(self.ingredients)
+    else:
       graphic = open('ramsayascii.txt').read()
       print(graphic)
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
-    else:
-      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = conversation_starter_graphic(self.ingredients)
+      
 
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
@@ -191,10 +193,19 @@ class Chef_Raimsey:
         if alrg in ingr:
           item[3] = allergen_free + item[3]
 
+    # Add attributes to the new recipe
     new_recipe.recipe_type = self.categorize(new_recipe).strip()
     new_recipe.name = self.name_recipe(new_recipe).strip()
     new_recipe.summary = self.create_summary(new_recipe).strip()
-    print(self.format_recipe(new_recipe))
+    
+    # if GUI enabled, print the recipe to the interface
+    if self.gui:
+      self.chef_raimsey_graphic.display_recipe_graphic(self.format_recipe(new_recipe), self.user_name)
+    # else, print to terminal
+    else:
+      print(f"Here is dessert recipe custom made for {self.user_name}! \n")
+      print(self.format_recipe(new_recipe))
+      
     self.add_new_recipe(new_recipe)
     return new_recipe
   
@@ -490,8 +501,6 @@ def main():
   Method to get the Chef working!
   '''
   chef = Chef_Raimsey()
-  print("\n")
-  print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()
 
   # Sue's test
