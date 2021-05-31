@@ -166,6 +166,17 @@ class Chef_Raimsey:
       last_ingredient = next_ingredient
       # print(new_recipe.ingredients)
 
+    #we may not catch all specific ingredients with allergens
+    #iterate over looking for allergen names, apppend non-allergy to ingredient
+    for item in new_recipe.ingredients:
+      ingr = item[3]
+      for allergy in self.main_allergen:
+        if allergy in ingr:
+          item[3] = "non-" + allergy + item[3]
+      for alrg in self.list_of_allergens:
+        if alrg in ingr:
+          item[3]
+
     new_recipe.recipe_type = self.categorize(new_recipe).strip()
     new_recipe.name = self.name_recipe(new_recipe).strip()
     new_recipe.summary = self.create_summary(new_recipe).strip()
@@ -438,6 +449,7 @@ class Chef_Raimsey:
           allergy = mapping[choice]
           print("Ok noted! So you are allergic to", allergy,".")
           main_allergen = allergy
+          ingredients_allergens.append(main_allergen)
           allergies_list = allergens_dict[list_of_allergens[choice]]
           allergies_list = [s.strip().lower() for s in allergies_list]
           for i in range(len(allergies_list)):
@@ -446,7 +458,7 @@ class Chef_Raimsey:
           while final_allergy.capitalize() not in allergies_list and final_allergy not in allergies_list and final_allergy.strip() not in allergies_list:
               final_allergy = input("The instructions asked you to enter the specific ingredient as shown in the list above. Try again: ")
           print("Okay, thanks for sharing.", final_allergy.capitalize(), "will not be part of the recipe I generate for your dessert!")
-          if final_allergy.capitalize() == "All of the Above" or final_allergy == "All of the Above" or final_allergy.strip() == "All of the Above":
+          if final_allergy.lower() == "all of the above" or final_allergy.strip().lower() == "all of the above":
               for k in range(len(allergies_list)-1):
                   ingredients_allergens.append(allergies_list[k].lower())
           else:

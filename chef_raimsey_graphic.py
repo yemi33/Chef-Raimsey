@@ -174,7 +174,7 @@ def conversation_starter_graphic(ingredients_dict):
         message.undraw()
         reply.setText(f"Okay, thanks for sharing. {final_allergy} will not be \npart of the recipe I generate for your dessert!")
 
-        if final_allergy.capitalize() == "All of the Above" or final_allergy == "All of the Above" or final_allergy.strip() == "All of the Above":
+        if final_allergy.lower() == "all of the above" or final_allergy.strip().lower() == "all of the above":
             for k in range(len(allergies_list)-1):
                 ingredients_allergens.append(allergies_list[k].lower())
         else:
