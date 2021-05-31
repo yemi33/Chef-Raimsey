@@ -9,7 +9,7 @@ def conversation_starter_graphic(ingredients_dict):
   name = ""
   favorite_ingredient = ""
   ingredients_allergens = []
-  main_allergen = ""
+  main_allergen = []
   
   window = GraphWin("Chef Raimsey", 600, 800)
   window.setCoords(0,0,30,40)
@@ -131,7 +131,7 @@ def conversation_starter_graphic(ingredients_dict):
         choice = int(choice)
         allergy = mapping[choice]
         reply.setText(f"Ok noted! So you are allergic to {allergy}.")
-        main_allergen = allergy
+        main_allergen.append(allergy.strip())
         allergies_list = allergens_dict[list_of_allergens[choice]]
         allergies_list = [s.strip().lower() for s in allergies_list]
 
@@ -173,8 +173,7 @@ def conversation_starter_graphic(ingredients_dict):
         entry.undraw()
         message.undraw()
         reply.setText(f"Okay, thanks for sharing. {final_allergy} will not be \npart of the recipe I generate for your dessert!")
-
-        if final_allergy.lower() == "all of the above" or final_allergy.strip().lower() == "all of the above":
+        if final_allergy.lower() == "all of the above" or final_allergy.strip() == "All of the Above":
             for k in range(len(allergies_list)-1):
                 ingredients_allergens.append(allergies_list[k].lower())
         else:
