@@ -104,7 +104,7 @@ def conversation_starter_graphic(ingredients_dict):
         options = []
         for idx in range(len(list_of_allergens)):
             mapping[idx] = list_of_allergens[idx]
-            option = Text(Point(15, (18 - idx * 2)),f"{idx}) {list_of_allergens[idx]}")
+            option = Text(Point(15, (18 - idx * 1)),f"{idx}) {list_of_allergens[idx]}")
             option.setSize(16)
             option.draw(window)
             options.append(option)
@@ -146,7 +146,7 @@ def conversation_starter_graphic(ingredients_dict):
               if not renewed:
                 renewed = True
                 y = 0
-            option = Text(Point(x, (18 - y * 2)),f"{i}) {allergies_list[i]}")
+            option = Text(Point(x, (18 - y * 1)),f"{i}) {allergies_list[i]}")
             option.setSize(16)
             option.draw(window)
             options.append(option)

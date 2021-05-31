@@ -467,7 +467,7 @@ def main():
   '''
   Method to get the Chef working!
   '''
-  chef = Chef_Raimsey(gui=False)
+  chef = Chef_Raimsey()
   print("\n")
   print(f"Here is dessert recipe custom made for {chef.user_name}! \n")
   recipe = chef.generate()
