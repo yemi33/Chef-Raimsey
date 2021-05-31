@@ -16,7 +16,6 @@ pip install gensim
 pip install python-Levenshtein
 '''
 
-# fix summary/ allergens
 class Chef_Raimsey:
   '''
   Class that represents a Chef Raimsey simulation.
@@ -153,20 +152,44 @@ class Chef_Raimsey:
     added_ingredients = [] #list to keep track of already added ingredients, so we can avoid repeats
     #start a for loop to add all the other ingredient
     last_ingredient = user_favorite_food
+
     for i in range(self.num_of_ingredients()):
       next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
       next_amount = self.find_frequently_used_amount(next_ingredient)
       next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
       next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
-      while next_ingredient in self.list_of_allergies or next_ingredient in added_ingredients: #don't want allergens to be included in the recipe object
+      generate_new = False
+      for alrg in self.list_of_allergies:
+        if alrg in next_ingredient:
+          generate_new = True
+      while generate_new == True or next_ingredient in added_ingredients: #don't want allergens to be included in the recipe object or repeat ingredients
         next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
         next_amount = self.find_frequently_used_amount(next_ingredient)
         next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
         next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+        generate_new = False
+        for alrg in self.list_of_allergies:
+          if alrg in next_ingredient:
+            generate_new = True
       added_ingredients.append(next_ingredient)
       new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient])
       last_ingredient = next_ingredient
       # print(new_recipe.ingredients)
+    
+    #if allergens still left in list, append allergen-free to it
+    allergen_free = ""
+    if len(self.main_allergen) == 1:
+      allergen_free = self.main_allergen[0].lower() + "-free"
+    else:
+      for a in self.main_allergen:
+        allergen_free = allergen_free + a.lower() + "/"
+      allergen_free = allergen_free[:-1]
+      allergen_free += "-free "
+    for item in new_recipe.ingredients:
+      ingr = item[3]
+      for alrg in self.list_of_allergies:
+        if alrg in ingr:
+          item[3] = allergen_free + item[3]
 
     new_recipe.recipe_type = self.categorize(new_recipe).strip()
     new_recipe.name = self.name_recipe(new_recipe).strip()
@@ -304,9 +327,7 @@ class Chef_Raimsey:
     name_list = []
 
     if len(self.list_of_allergies) > 0:
-      random_choice = random.choice(self.list_of_allergies)
-      if random_choice.lower().strip() == "all of the above":
-        random_choice = self.main_allergen
+      random_choice = random.choice(self.main_allergen)
       random_choice.replace("_", "-")
       string = "Non-" + random_choice.title()
       name_list.append(string)
@@ -404,7 +425,7 @@ class Chef_Raimsey:
     First few words of the greatest dessert Chef ever.
     '''
     ingredients_allergens = []
-    main_allergen = ""
+    main_allergen = []
     name = input("Hi. This is Chef Raimsey! And what is your name? ").capitalize()
     print("Oh Great! Hi", name, ". ")
     favorite_ingredient = input("What is your favorite ingredient in a dessert? ").lower()
@@ -439,7 +460,7 @@ class Chef_Raimsey:
           choice = int(choice)
           allergy = mapping[choice]
           print("Ok noted! So you are allergic to", allergy,".")
-          main_allergen = allergy
+          main_allergen.append(allergy.strip())
           allergies_list = allergens_dict[list_of_allergens[choice]]
           allergies_list = [s.strip().lower() for s in allergies_list]
           for i in range(len(allergies_list)):
@@ -448,7 +469,7 @@ class Chef_Raimsey:
           while final_allergy.capitalize() not in allergies_list and final_allergy not in allergies_list and final_allergy.strip() not in allergies_list:
               final_allergy = input("The instructions asked you to enter the specific ingredient as shown in the list above. Try again: ")
           print("Okay, thanks for sharing.", final_allergy.capitalize(), "will not be part of the recipe I generate for your dessert!")
-          if final_allergy.capitalize() == "All of the Above" or final_allergy == "All of the Above" or final_allergy.strip() == "All of the Above":
+          if final_allergy.lower() == "all of the above" or final_allergy.strip() == "All of the Above":
               for k in range(len(allergies_list)-1):
                   ingredients_allergens.append(allergies_list[k].lower())
           else:
