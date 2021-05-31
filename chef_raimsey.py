@@ -16,7 +16,6 @@ pip install gensim
 pip install python-Levenshtein
 '''
 
-# fix summary/ allergens
 class Chef_Raimsey:
   '''
   Class that represents a Chef Raimsey simulation.
