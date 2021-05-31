@@ -24,7 +24,8 @@ class Chef_Raimsey:
   #Nicole
   def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
-    if not gui:
+    self.gui = gui
+    if not self.gui:
       graphic = open('ramsayascii.txt').read()
       print(graphic)
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()

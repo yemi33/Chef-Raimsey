@@ -11,32 +11,42 @@ def conversation_starter_graphic(ingredients_dict):
   ingredients_allergens = []
   main_allergen = ""
   
+  # Initialize window and various graphical elements
   window = GraphWin("Chef Raimsey", 600, 800)
   window.setCoords(0,0,30,40)
-
   image = Image(Point(15,32), "ramsay.gif")
   image.draw(window)
   message = Text(Point(15, 22),"Hi. This is Chef Raimsey! And what is your name? ")
   message.setSize(20)
   message.draw(window)
   entry = Entry(Point(15, 5), 15)
+  entry.setSize(20)
+  entry.setFill(color_rgb(247,247,222))
   entry.draw(window)
+  guide = Text(Point(15,2), "Hit Enter to move on.")
+  guide.setTextColor('red')
+  guide.draw(window)
+  reply = Text(Point(15, 8), "")
+  reply.setSize(20)
+  reply.draw(window)
+
+  # Get user name
   while window.getKey() != "Return":
     name = entry.getText().capitalize()
   name = entry.getText().capitalize()
   entry.undraw()
 
-  message.undraw()
-  reply = Text(Point(15, 8),f"Oh Great! Hi {name}.")
-  reply.draw(window)
-  reply.setSize(20)
-
+  # Reply to user name
+  message.setText("")
+  reply.setText(f"Oh Great! Hi {name}.")
+  
+  # Transition
   while window.getKey() != "Return":
-    reply.setSize(20)
-    
-  reply.undraw()
+    reply.setSize(20) 
+  reply.setText("")
+
+  # Ask for user favorite ingredient
   message.setText("What is your favorite ingredient in a dessert? ")
-  message.draw(window)
   entry.setText("")
   entry.draw(window)
 
@@ -44,31 +54,30 @@ def conversation_starter_graphic(ingredients_dict):
     favorite_ingredient = entry.getText().capitalize()
   favorite_ingredient = entry.getText().lower()
   entry.undraw()
-  message.undraw()
+  message.setText("")
 
+  # Check if user favorite ingredient in ingredients dict
   if favorite_ingredient in list(ingredients_dict.keys()):
     reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
-    reply.draw(window)
     while window.getKey() != "Return":
       reply.setSize(20)
   else:
     res = [key for key in ingredients_dict.keys() if favorite_ingredient in key]
     if len(res) == 0:
         reply.setText("Sorry, we don't have your ingredient in our recipe shelf \nbut let's see what we can concoct for you! ")
-        reply.draw(window)
         favorite_ingredient = random.choice(list(ingredients_dict.keys()))
         while window.getKey() != "Return":
           reply.setSize(20)
     else:
       reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
-      reply.draw(window)
       while window.getKey() != "Return":
         reply.setSize(20)
       favorite_ingredient = res[0]
-    
-  reply.undraw()
+  reply.setText("")
+
+  # Check for user allergies
   message.setText("And do you have any allergies that I should be aware of (Y/N)? ")
-  message.draw(window)
+  guide.undraw()
   
   button_yes = Rectangle(Point(9,5),Point(12,7))
   button_yes_text = Text(button_yes.getCenter(),"Yes")
@@ -94,6 +103,7 @@ def conversation_starter_graphic(ingredients_dict):
   button_no.undraw()
   button_no_text.undraw()
 
+  guide.draw(window)
   if allergic:
       allergies = True
       while allergies:
@@ -117,7 +127,6 @@ def conversation_starter_graphic(ingredients_dict):
         choice = entry.getText().capitalize()
 
         reply.setText("The instructions say that you need \nto input integers between 0 and 4.")
-        reply.draw(window)
         while choice.isnumeric() == False or int(choice) < 0 or int(choice) > 4:
             entry.setText("")
             while window.getKey() != "Return":
@@ -171,18 +180,20 @@ def conversation_starter_graphic(ingredients_dict):
         for option in options:
           option.undraw()
         entry.undraw()
-        message.undraw()
-        reply.setText(f"Okay, thanks for sharing. {final_allergy} will not be \npart of the recipe I generate for your dessert!")
+        message.setText("")
 
         if final_allergy.capitalize() == "All of the Above" or final_allergy == "All of the Above" or final_allergy.strip() == "All of the Above":
             for k in range(len(allergies_list)-1):
                 ingredients_allergens.append(allergies_list[k].lower())
         else:
             ingredients_allergens.append(final_allergy.lower())
+        
+        reply.setText(f"Okay, thanks for sharing. {final_allergy} will not be \npart of the recipe I generate for your dessert!")
+        while window.getKey() != "Return":
+          reply.setSize(20)
 
-        reply.undraw()
+        reply.setText("")
         message.setText("Do you have any more allergies I should know about? (Y/N) ")
-        message.draw(window)
         more_allergies = ""
 
         button_yes = Rectangle(Point(9,5),Point(12,7))
@@ -213,24 +224,20 @@ def conversation_starter_graphic(ingredients_dict):
         if more_allergies == "N":
           allergies = False
           reply.setText("Alright, cool. We can move on then!")
-          reply.draw(window)
-          message.undraw()
+          message.setText("")
           while window.getKey() != "Return":
             reply.setSize(20)
           reply.setText("Check the terminal for your recipe!")
           time.sleep(2)
-          reply.setText("Bye!")
         entry.undraw()
-        reply.undraw()
+        reply.setText("")
   else:
       reply.setText("Alright, cool. We can move on then!")
-      message.undraw()
-      reply.draw(window)
+      message.setText("")
       while window.getKey() != "Return":
         reply.setSize(20)
       reply.setText("Check the terminal for your recipe!")
       time.sleep(2)
-      reply.setText("Bye!")
 
   return name, favorite_ingredient, ingredients_allergens, main_allergen
 
