@@ -168,14 +168,14 @@ class Chef_Raimsey:
 
     #we may not catch all specific ingredients with allergens
     #iterate over looking for allergen names, apppend non-allergy to ingredient
-    for item in new_recipe.ingredients:
-      ingr = item[3]
-      for allergy in self.main_allergen:
-        if allergy in ingr:
-          item[3] = "non-" + allergy + item[3]
-      for alrg in self.list_of_allergens:
-        if alrg in ingr:
-          item[3]
+    #for item in new_recipe.ingredients:
+      #ingr = item[3]
+      #for alrg in self.list_of_allergens:
+        #if alrg in ingr:
+          #allergen_free = ""
+          #for a in self.main_allergen:
+
+          #item[3] = allergen_free + item[3]
 
     new_recipe.recipe_type = self.categorize(new_recipe).strip()
     new_recipe.name = self.name_recipe(new_recipe).strip()
