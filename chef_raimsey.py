@@ -25,12 +25,10 @@ class Chef_Raimsey:
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
     self.gui = gui
     self.chef_raimsey_graphic = Chef_Raimsey_Graphic(self.ingredients)
-    if self.gui:
-      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic()
-    else:
-      graphic = open('ramsayascii.txt').read()
-      print(graphic)
-      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
+    self.user_name = ""
+    self.favorite_ingredient = "" 
+    self.list_of_allergies = []
+    self.main_allergen = []
       
 
   #Nicole
@@ -136,13 +134,19 @@ class Chef_Raimsey:
   #Nicole - recipe ingredient list generation complete
   def generate(self):
     '''
-    Uses user's favorite ingredient or food to initiate the recipe generation process.
+    calls conversation starter. Uses user's favorite ingredient or food to initiate the recipe generation process.
 
-    Args:
-      user_favorite_food: user-specied favorite food/ingredient
     Returns:
       A recipe object
     '''
+    #start the coversation to get user name, fav ingredient, and allergies
+    if self.gui:
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic()
+    else:
+      graphic = open('ramsayascii.txt').read()
+      print(graphic)
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
+
     user_favorite_food = self.favorite_ingredient
     # start generation process off of the user's favorite food
     new_recipe = preprocessing.Recipe(name="",summary="",ingredients=[],recipe_type="")
@@ -152,27 +156,33 @@ class Chef_Raimsey:
     fav_ingredient_prep = self.find_frequently_used_prep(user_favorite_food)
     new_recipe.ingredients.append([fav_ingredient_amount,fav_ingredient_unit,fav_ingredient_prep,user_favorite_food]) # this should be a len 4 list
     added_ingredients = [] #list to keep track of already added ingredients, so we can avoid repeats
+    added_ingredients.append(user_favorite_food)
     #start a for loop to add all the other ingredient
     last_ingredient = user_favorite_food
 
-    for i in range(self.num_of_ingredients()):
+    while len(new_recipe.ingredients) < self.num_of_ingredients:
       next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
       next_amount = self.find_frequently_used_amount(next_ingredient)
       next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
       next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+
       generate_new = False
+      #check if ingredients contains user allergens
       for alrg in self.list_of_allergies:
         if alrg in next_ingredient:
           generate_new = True
+
       while generate_new == True or next_ingredient in added_ingredients: #don't want allergens to be included in the recipe object or repeat ingredients
         next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
         next_amount = self.find_frequently_used_amount(next_ingredient)
         next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)
         next_ingredient_prep = self.find_frequently_used_prep(next_ingredient)
+
         generate_new = False
         for alrg in self.list_of_allergies:
           if alrg in next_ingredient:
             generate_new = True
+
       added_ingredients.append(next_ingredient)
       new_recipe.ingredients.append([next_amount,next_ingredient_unit,next_ingredient_prep,next_ingredient])
       last_ingredient = next_ingredient
@@ -181,12 +191,12 @@ class Chef_Raimsey:
     #if allergens still left in list, append allergen-free to it
     allergen_free = ""
     if len(self.main_allergen) == 1:
-      allergen_free = self.main_allergen[0].lower() + "-free"
+      allergen_free = self.main_allergen[0].lower() + "-free" #eg dairy-free
     else:
       for a in self.main_allergen:
         allergen_free = allergen_free + a.lower() + "/"
-      allergen_free = allergen_free[:-1]
-      allergen_free += "-free "
+      allergen_free = allergen_free[:-1] #get rid of the last /
+      allergen_free += "-free " #eg dairy/egg-free
     for item in new_recipe.ingredients:
       ingr = item[3]
       for alrg in self.list_of_allergies:

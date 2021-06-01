@@ -3,14 +3,16 @@ from chef_raimsey_graphic import *
 from graphics import *
 
 class Chef_Raimsey_Controller:
-  def start(self):
-    chef = Chef_Raimsey(gui=True)
-    recipe = chef.generate()
-    self.start_over(chef)
+  def __init__(self):
+    self.chef = Chef_Raimsey(gui=True)
 
-  def start_over(self,chef):
-    if chef.gui:
-      window = chef.chef_raimsey_graphic.window
+  def start(self):
+    recipe = self.chef.generate()
+    self.start_over()
+
+  def start_over(self):
+    if self.chef.gui:
+      window = self.chef.chef_raimsey_graphic.window
 
       button_yes = Rectangle(Point(8,3),Point(13,5))
       button_yes_text = Text(button_yes.getCenter(),"Start Over")
@@ -23,7 +25,7 @@ class Chef_Raimsey_Controller:
       button_no.draw(window)
       button_no_text.draw(window)
 
-      chef.chef_raimsey_graphic.guide.setText("")
+      self.chef.chef_raimsey_graphic.guide.setText("")
 
       while True:
         clickPoint = window.getMouse()
@@ -40,7 +42,11 @@ class Chef_Raimsey_Controller:
       button_no.undraw()
       button_no_text.undraw()
     else:
-      print("Start Over in Text Version To Be Implemented")
+      start_over = input("Start Over? (Y/N)")
+      if start_over.lower() == "y":
+        self.start()
+      else:
+        print("Good bye!")
 
 # for GUI button
 def inside(point, rectangle):
