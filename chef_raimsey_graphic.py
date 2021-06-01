@@ -26,6 +26,10 @@ class Chef_Raimsey_Graphic:
     self.guide.setTextColor('red')
     self.reply = Text(Point(15, 8), "")
     self.reply.setSize(20)
+    self.finish_image = Image(Point(15,32), "gordon_done.gif")
+    self.recipe_display = Text(Point(15,13),"")
+    self.recipe_display.setSize(15)
+    self.recipe_display.setFace('courier')
 
   def conversation_starter_graphic(self):
     '''
@@ -37,11 +41,27 @@ class Chef_Raimsey_Graphic:
     main_allergen = []
 
     # Initialize self.window and various graphical elements
-    self.image.draw(self.window)
-    self.message.draw(self.window)
-    self.entry.draw(self.window)
-    self.guide.draw(self.window)
-    self.reply.draw(self.window)
+    # to avoid running into Object currently drawn error, do the try except
+    try:
+      self.image.draw(self.window)
+    except:
+      pass
+    try:
+      self.message.draw(self.window)
+    except:
+      pass
+    try:
+      self.entry.draw(self.window)
+    except:
+      pass
+    try:
+      self.guide.draw(self.window)
+    except:
+      pass
+    try:
+      self.reply.draw(self.window)
+    except:
+      pass
 
     # Get user name
     while self.window.getKey() != "Return":
@@ -259,13 +279,13 @@ class Chef_Raimsey_Graphic:
         self.reply.setText("")
 
     self.message.setText("Wait for it...")
-    time.sleep(2)
+    time.sleep(1)
     return name, favorite_ingredient, ingredients_allergens, main_allergen
 
   def display_recipe_graphic(self,formatted_recipe, user_name):
     self.image.undraw()
-    self.image = Image(Point(15,32), "gordon_done.gif")
-    self.image.draw(self.window)
+    
+    self.finish_image.draw(self.window)
     self.guide.setText("")
     self.message.setText(f"Here is dessert recipe custom made for {user_name}! \n")
     split_string = formatted_recipe.split("\n\n")
@@ -284,10 +304,15 @@ class Chef_Raimsey_Graphic:
 
     summarystr = "\n".join(lines) + "."
     final_string = "\n\n".join([split_string[0], summarystr, split_string[2]])
-    recipe_display = Text(Point(15,13),final_string)
-    recipe_display.setSize(15)
-    recipe_display.setFace('courier')
-    recipe_display.draw(self.window)
+    self.recipe_display.setText(final_string)
+    self.recipe_display.draw(self.window)
     self.guide.setText("Hit Enter to move on.")
     while self.window.getKey() != "Return":
       recipe_display.setSize(15)
+
+  def reset_display(self):
+    self.message.setText("Hi. This is Chef Raimsey! And what is your name? ")
+    self.entry.setText("")
+    self.finish_image.undraw()
+    self.recipe_display.undraw()
+

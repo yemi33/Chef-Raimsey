@@ -1,15 +1,9 @@
 import sys, os
-#sys.path.append('/Users/yemishin/Desktop/Final-Project-carlcs322s01s21-2/InferKit') # for Yemi's local
+sys.path.append('/Users/yemishin/Desktop/Final-Project-carlcs322s01s21-2/InferKit') # for Yemi's local
 #sys.path.append('/Users/maanyagoenka/Final-Project-carlcs322s01s21-2/InferKit') # for Maanya's local
-<<<<<<< HEAD
-<<<<<<< HEAD
-sys.path.append('/home/runner/Final-Project-carlcs322s01s21-2/InferKit') # for repl
-=======
-=======
->>>>>>> origin/master
-sys.path.append('/Users/xueqi/Documents/GitHub/Final-Project-carlcs322s01s21-2/InferKit') # for Sue's local
 #sys.path.append('/home/runner/Final-Project-carlcs322s01s21-2/InferKit') # for repl
->>>>>>> origin/master
+#sys.path.append('/Users/xueqi/Documents/GitHub/Final-Project-carlcs322s01s21-2/InferKit') # for Sue's local
+#sys.path.append('/home/runner/Final-Project-carlcs322s01s21-2/InferKit') # for repl
 #print(sys.path)
 
 import requests

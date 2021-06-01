@@ -30,7 +30,6 @@ class Chef_Raimsey:
     self.list_of_allergies = []
     self.main_allergen = []
       
-
   #Nicole
   def find_frequently_paired_ingredient(self, ingredient):
     '''
@@ -159,8 +158,9 @@ class Chef_Raimsey:
     added_ingredients.append(user_favorite_food)
     #start a for loop to add all the other ingredient
     last_ingredient = user_favorite_food
+    num_ingredients = self.num_of_ingredients()
 
-    while len(new_recipe.ingredients) < self.num_of_ingredients:
+    while len(new_recipe.ingredients) < num_ingredients:
       next_ingredient = self.find_frequently_paired_ingredient(last_ingredient)
       next_amount = self.find_frequently_used_amount(next_ingredient)
       next_ingredient_unit = self.find_frequently_used_unit(next_ingredient)

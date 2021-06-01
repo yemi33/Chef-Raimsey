@@ -31,7 +31,11 @@ class Chef_Raimsey_Controller:
       while True:
         clickPoint = window.getMouse()
         if inside(clickPoint,button_yes):
-          window.close()
+          self.chef.chef_raimsey_graphic.reset_display()
+          button_yes.undraw()
+          button_yes_text.undraw()
+          button_no.undraw()
+          button_no_text.undraw()
           self.start()
           break
         elif inside(clickPoint,button_no):
@@ -40,10 +44,10 @@ class Chef_Raimsey_Controller:
           button_no.undraw()
           button_no_text.undraw()
           bye_box = Rectangle(Point(8,3),Point(22,5))
-          bye_text = Text(bye_box.getCenter(), "I hope you enjoying the recipe. Bye!")
+          bye_text = Text(bye_box.getCenter(), "I hope you enjoy the recipe. Bye!")
           bye_box.draw(window)
           bye_text.draw(window)
-          time.sleep(10)
+          time.sleep(2)
           bye_box.undraw()
           button_no_text.undraw()
           window.close()
