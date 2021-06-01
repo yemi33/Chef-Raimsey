@@ -24,9 +24,9 @@ class Chef_Raimsey:
   def __init__(self,test=False, gui=True):
     self.recipe_list, self.ingredients, self.amount, self.unit, self.prep, self.model = preprocessing.preprocess(test=test)
     self.gui = gui
-    self.chef_raimsey_graphic = Chef_Raimsey_Graphic()
+    self.chef_raimsey_graphic = Chef_Raimsey_Graphic(self.ingredients)
     if self.gui:
-      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic(self.ingredients)
+      self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic()
     else:
       graphic = open('ramsayascii.txt').read()
       print(graphic)
@@ -205,7 +205,7 @@ class Chef_Raimsey:
     else:
       print(f"Here is dessert recipe custom made for {self.user_name}! \n")
       print(self.format_recipe(new_recipe))
-      
+
     self.add_new_recipe(new_recipe)
     return new_recipe
   

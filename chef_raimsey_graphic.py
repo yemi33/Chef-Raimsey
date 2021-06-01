@@ -12,7 +12,8 @@ def inside(point, rectangle):
   return ll.getX() < point.getX() < ur.getX() and ll.getY() < point.getY() < ur.getY()
 
 class Chef_Raimsey_Graphic:
-  def __init__(self):
+  def __init__(self, ingredients_dict):
+    self.ingredients_dict = ingredients_dict
     self.window = GraphWin("Chef Raimsey", 600, 800)
     self.window.setCoords(0,0,30,40)
     self.image = Image(Point(15,32), "ramsay.gif")
@@ -26,7 +27,7 @@ class Chef_Raimsey_Graphic:
     self.reply = Text(Point(15, 8), "")
     self.reply.setSize(20)
 
-  def conversation_starter_graphic(self, ingredients_dict):
+  def conversation_starter_graphic(self):
     '''
     First few words of the greatest dessert Chef ever.
     '''
@@ -69,15 +70,15 @@ class Chef_Raimsey_Graphic:
     self.message.setText("")
 
     # Check if user favorite ingredient in ingredients dict
-    if favorite_ingredient in list(ingredients_dict.keys()):
+    if favorite_ingredient in list(self.ingredients_dict.keys()):
       self.reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
       while self.window.getKey() != "Return":
         self.reply.setSize(20)
     else:
-      res = [key for key in ingredients_dict.keys() if favorite_ingredient in key]
+      res = [key for key in self.ingredients_dict.keys() if favorite_ingredient in key]
       if len(res) == 0:
           self.reply.setText("Sorry, we don't have your ingredient in our recipe shelf \nbut let's see what we can concoct for you! ")
-          favorite_ingredient = random.choice(list(ingredients_dict.keys()))
+          favorite_ingredient = random.choice(list(self.ingredients_dict.keys()))
           while self.window.getKey() != "Return":
             self.reply.setSize(20)
       else:
@@ -239,9 +240,6 @@ class Chef_Raimsey_Graphic:
             self.message.setText("")
             while self.window.getKey() != "Return":
               self.reply.setSize(20)
-            self.reply.setText("Check the terminal for your recipe!")
-            while self.window.getKey() != "Return":
-              self.reply.setSize(20)
           self.entry.undraw()
           self.reply.setText("")
     else:
@@ -249,14 +247,16 @@ class Chef_Raimsey_Graphic:
         self.message.setText("")
         while self.window.getKey() != "Return":
           self.reply.setSize(20)
-        self.reply.setText("Check the terminal for your recipe!")
-        while self.window.getKey() != "Return":
-          self.reply.setSize(20)
         self.reply.setText("")
-
+    
+    self.message.setText("Wait for it...")
+    time.sleep(2)
     return name, favorite_ingredient, ingredients_allergens, main_allergen
 
   def display_recipe_graphic(self,formatted_recipe, user_name):
+    self.image.undraw()
+    self.image = Image(Point(15,32), "gordon_done.gif")
+    self.image.draw(self.window)
     self.guide.setText("")
     self.message.setText(f"Here is dessert recipe custom made for {user_name}! \n")
     split_string = formatted_recipe.split("\n\n")
@@ -279,5 +279,6 @@ class Chef_Raimsey_Graphic:
     recipe_display.setSize(15)
     recipe_display.setFace('courier')
     recipe_display.draw(self.window)
+    self.guide.setText("Hit Enter to move on.")
     while self.window.getKey() != "Return":
       recipe_display.setSize(15)
