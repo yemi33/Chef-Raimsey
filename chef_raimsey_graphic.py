@@ -1,5 +1,5 @@
 from graphics import *
-import random 
+import random
 import preprocessing
 
 # for GUI button
@@ -35,7 +35,7 @@ class Chef_Raimsey_Graphic:
     favorite_ingredient = ""
     ingredients_allergens = []
     main_allergen = []
-    
+
     # Initialize self.window and various graphical elements
     self.image.draw(self.window)
     self.message.draw(self.window)
@@ -51,11 +51,14 @@ class Chef_Raimsey_Graphic:
 
     # self.reply to user name
     self.message.setText("")
-    self.reply.setText(f"Oh Great! Hi {name}.")
-    
+    if len(name) == 0:
+      self.reply.setText("Okay, my kid!")
+    else:
+      self.reply.setText(f"Oh Great! Hi {name}.")
+
     # Transition
     while self.window.getKey() != "Return":
-      self.reply.setSize(20) 
+      self.reply.setSize(20)
     self.reply.setText("")
 
     # Ask for user favorite ingredient
@@ -70,7 +73,13 @@ class Chef_Raimsey_Graphic:
     self.message.setText("")
 
     # Check if user favorite ingredient in ingredients dict
-    if favorite_ingredient in list(self.ingredients_dict.keys()):
+    no_list = ["nothing", "none", "no", "nope", "n/a", ""]
+    if favorite_ingredient.lower() in no_list:
+      self.reply.setText("Okay! Let's see what we can concoct for you!")
+      favorite_ingredient = random.choice(list(self.ingredients_dict.keys()))
+      while self.window.getKey() != "Return":
+        self.reply.setSize(20)
+    elif favorite_ingredient in list(self.ingredients_dict.keys()):
       self.reply.setText(f"{favorite_ingredient.capitalize()}! Yummy, good choice!!")
       while self.window.getKey() != "Return":
         self.reply.setSize(20)
@@ -91,7 +100,7 @@ class Chef_Raimsey_Graphic:
     # Check for user allergies
     self.message.setText("And do you have any allergies that I should be aware of (Y/N)? ")
     self.guide.undraw()
-    
+
     button_yes = Rectangle(Point(9,5),Point(12,7))
     button_yes_text = Text(button_yes.getCenter(),"Yes")
     button_no = Rectangle(Point(18,5),Point(21,7))
@@ -110,7 +119,7 @@ class Chef_Raimsey_Graphic:
         break
       elif inside(clickPoint,button_no):
         break
-    
+
     button_yes.undraw()
     button_yes_text.undraw()
     button_no.undraw()
@@ -145,7 +154,7 @@ class Chef_Raimsey_Graphic:
               while self.window.getKey() != "Return":
                 choice = self.entry.getText().capitalize()
               choice = self.entry.getText().capitalize()
-          
+
           self.reply.setText("")
           for option in options:
             option.undraw()
@@ -174,7 +183,7 @@ class Chef_Raimsey_Graphic:
               options.append(option)
               y += 1
           self.reply.setText("")
-          
+
           self.message.setText("Which of these are you allergic to? \nEnter the specific ingredient as shown in the list above: ")
           self.entry.setText("")
           final_allergy = ""
@@ -200,7 +209,7 @@ class Chef_Raimsey_Graphic:
                   ingredients_allergens.append(allergies_list[k].lower())
           else:
               ingredients_allergens.append(final_allergy.lower())
-          
+
           self.reply.setText(f"Okay, thanks for sharing. {final_allergy} will not be \npart of the recipe I generate for your dessert!")
           while self.window.getKey() != "Return":
             self.reply.setSize(20)
@@ -213,7 +222,7 @@ class Chef_Raimsey_Graphic:
           button_yes_text = Text(button_yes.getCenter(),"Yes")
           button_no = Rectangle(Point(18,5),Point(21,7))
           button_no_text = Text(button_no.getCenter(),"No")
-        
+
           button_yes.draw(self.window)
           button_yes_text.draw(self.window)
           button_no.draw(self.window)
@@ -228,7 +237,7 @@ class Chef_Raimsey_Graphic:
             elif inside(clickPoint,button_no):
               more_allergies = "N"
               break
-          
+
           button_yes.undraw()
           button_yes_text.undraw()
           button_no.undraw()
@@ -248,7 +257,7 @@ class Chef_Raimsey_Graphic:
         while self.window.getKey() != "Return":
           self.reply.setSize(20)
         self.reply.setText("")
-    
+
     self.message.setText("Wait for it...")
     time.sleep(2)
     return name, favorite_ingredient, ingredients_allergens, main_allergen
@@ -272,7 +281,7 @@ class Chef_Raimsey_Graphic:
       else:
         line += token + " "
     lines.append(line)
-    
+
     summarystr = "\n".join(lines) + "."
     final_string = "\n\n".join([split_string[0], summarystr, split_string[2]])
     recipe_display = Text(Point(15,13),final_string)
