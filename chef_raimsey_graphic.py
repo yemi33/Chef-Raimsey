@@ -149,7 +149,6 @@ class Chef_Raimsey_Graphic:
     if allergic:
         allergies = True
         while allergies:
-          self.message.setText("Oh no! I will generate a recipe for you that takes the allergy into account.\nSo what is it that you are allergic to? \nHere is a list of possible options to help you out: ")
           allergens_dict = preprocessing.allergen()
           list_of_allergens = list(allergens_dict.keys())
           mapping = {}
@@ -182,6 +181,7 @@ class Chef_Raimsey_Graphic:
           choice = int(choice)
           allergy = mapping[choice]
           self.reply.setText(f"Ok noted! So you are allergic to {allergy}.")
+          time.sleep(1)
           main_allergen.append(allergy.strip())
           allergies_list = allergens_dict[list_of_allergens[choice]]
           allergies_list = [s.strip().lower() for s in allergies_list]
