@@ -16,7 +16,7 @@ class Chef_Raimsey_Graphic:
     self.ingredients_dict = ingredients_dict
     self.window = GraphWin("Chef Raimsey", 600, 800)
     self.window.setCoords(0,0,30,40)
-    self.image = Image(Point(15,32), "ramsay.gif")
+    self.image = Image(Point(15,32), "images/ramsay.gif")
     self.message = Text(Point(15, 22),"Hi. This is Chef Raimsey! And what is your name? ")
     self.message.setSize(20)
     self.entry = Entry(Point(15, 5), 15)
@@ -26,7 +26,7 @@ class Chef_Raimsey_Graphic:
     self.guide.setTextColor('red')
     self.reply = Text(Point(15, 8), "")
     self.reply.setSize(20)
-    self.finish_image = Image(Point(15,32), "gordon_done.gif")
+    self.finish_image = Image(Point(15,32), "images/gordon_done.gif")
     self.recipe_display = Text(Point(15,13),"")
     self.recipe_display.setSize(15)
     self.recipe_display.setFace('courier')

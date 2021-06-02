@@ -142,7 +142,7 @@ class Chef_Raimsey:
     if self.gui:
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.chef_raimsey_graphic.conversation_starter_graphic()
     else:
-      graphic = open('ramsayascii.txt').read()
+      graphic = open('images/ramsayascii.txt').read()
       print(graphic)
       self.user_name, self.favorite_ingredient, self.list_of_allergies, self.main_allergen = self.conversation_starter()
 
